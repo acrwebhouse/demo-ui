@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 員工列表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .employee-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .employee-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .employee-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2196F3;
+        }
+
+        .rank-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #e3f2fd;
+            color: #2196F3;
+        }
+
+        .employee-info {
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .info-line {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .status-suspended {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-view {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-edit {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-resign {
+            background: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn">☰</button>
+        <div class="header-title">員工列表</div>
+    </div>
+
+    <div class="container">
+        <div id="employeeList"></div>
+    </div>
+
+    <script>
+        const employees = [
+            {
+                id: 1,
+                name: "王小明",
+                gender: "男",
+                account: "ming123",
+                phone: "0912-345-678",
+                mail: "ming123@gmail.com",
+                rank: 3,
+                manager: "張經理",
+                status: 2
+            },
+            {
+                id: 2,
+                name: "李美麗",
+                gender: "女",
+                account: "mary456",
+                phone: "0923-456-789",
+                mail: "mary456@gmail.com",
+                rank: 5,
+                manager: "張經理",
+                status: 2
+            },
+            {
+                id: 3,
+                name: "張大偉",
+                gender: "男",
+                account: "david789",
+                phone: "0934-567-890",
+                mail: "david789@gmail.com",
+                rank: 2,
+                manager: "張經理",
+                status: 2
+            },
+            {
+                id: 4,
+                name: "陳小華",
+                gender: "女",
+                account: "hua111",
+                phone: "0945-678-901",
+                mail: "hua111@gmail.com",
+                rank: 4,
+                manager: "李經理",
+                status: 2
+            },
+            {
+                id: 5,
+                name: "林志明",
+                gender: "男",
+                account: "jimmy222",
+                phone: "0956-789-012",
+                mail: "jimmy222@gmail.com",
+                rank: 1,
+                manager: "張經理",
+                status: 2
+            },
+            {
+                id: 6,
+                name: "黃淑芬",
+                gender: "女",
+                account: "susan333",
+                phone: "0967-890-123",
+                mail: "susan333@gmail.com",
+                rank: 6,
+                manager: "李經理",
+                status: 4
+            },
+            {
+                id: 7,
+                name: "周建國",
+                gender: "男",
+                account: "john444",
+                phone: "0978-901-234",
+                mail: "john444@gmail.com",
+                rank: 3,
+                manager: "李經理",
+                status: 2
+            },
+            {
+                id: 8,
+                name: "吳佳玲",
+                gender: "女",
+                account: "jia555",
+                phone: "0989-012-345",
+                mail: "jia555@gmail.com",
+                rank: 7,
+                manager: "王經理",
+                status: 2
+            },
+            {
+                id: 9,
+                name: "鄭雅婷",
+                gender: "女",
+                account: "ting666",
+                phone: "0911-123-456",
+                mail: "ting666@gmail.com",
+                rank: 2,
+                manager: "王經理",
+                status: 2
+            },
+            {
+                id: 10,
+                name: "蔡文傑",
+                gender: "男",
+                account: "jack777",
+                phone: "0922-234-567",
+                mail: "jack777@gmail.com",
+                rank: 5,
+                manager: "王經理",
+                status: 2
+            }
+        ];
+
+        const statusText = {
+            2: '正式員工',
+            4: '停權中'
+        };
+
+        const statusClass = {
+            2: 'status-active',
+            4: 'status-suspended'
+        };
+
+        function renderEmployees() {
+            const container = document.getElementById('employeeList');
+            container.innerHTML = employees.map(emp => `
+                <div class="employee-card">
+                    <div class="employee-header">
+                        <div class="employee-name">${emp.name}</div>
+                        <div class="rank-badge">等級 ${emp.rank}</div>
+                    </div>
+                    <div class="employee-info">
+                        <div class="info-line">姓名：${emp.name}</div>
+                        <div class="info-line">性別：${emp.gender}</div>
+                        <div class="info-line">帳號：${emp.account}</div>
+                        <div class="info-line">電話：${emp.phone}</div>
+                        <div class="info-line">信箱：${emp.mail}</div>
+                        <div class="info-line">主管：${emp.manager}</div>
+                        <div class="info-line">狀態：<span class="status-badge ${statusClass[emp.status]}">${statusText[emp.status]}</span></div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-view" onclick="viewEmployee(${emp.id}, '${emp.name}')">查看</button>
+                        <button class="btn btn-edit" onclick="editEmployee(${emp.id}, '${emp.name}')">編輯</button>
+                        <button class="btn btn-resign" onclick="resignEmployee(${emp.id}, '${emp.name}')">離職</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewEmployee(id, name) {
+            alert(`查看員工 ${name} 詳細資訊`);
+        }
+
+        function editEmployee(id, name) {
+            alert(`編輯員工 ${name} 資料`);
+        }
+
+        function resignEmployee(id, name) {
+            if (confirm(`確定要將 ${name} 設定為離職嗎？`)) {
+                alert(`已將 ${name} 設定為離職`);
+            }
+        }
+
+        renderEmployees();
+    </script>
+</body>
+</html>

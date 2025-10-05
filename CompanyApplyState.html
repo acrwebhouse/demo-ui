@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 申請狀態</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: #1a1a2e;
+            transition: left 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            padding: 20px;
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 20px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        .menu-icon {
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ddd, transparent);
+        }
+
+        .divider::before {
+            left: 0;
+        }
+
+        .divider::after {
+            right: 0;
+        }
+
+        .divider-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2196F3;
+            padding: 0 15px;
+            background: #f5f7fa;
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .info-row {
+            display: flex;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            background: #f8f9fa;
+            padding: 15px;
+            font-weight: 600;
+            color: #666;
+            min-width: 100px;
+            border-right: 1px solid #f0f0f0;
+        }
+
+        .info-value {
+            flex: 1;
+            padding: 15px;
+            color: #333;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+
+        .status-approved {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .status-rejected {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .btn {
+            margin-top: 20px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <div class="header-title">申請狀態</div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>🏠</span>
+            租重點
+        </div>
+        <ul class="sidebar-menu">
+            <li><span class="menu-icon">🏠</span>租屋列表</li>
+            <li><span class="menu-icon">🏡</span>我的租屋</li>
+            <li><span class="menu-icon">☁️</span>上傳租屋</li>
+            <li><span class="menu-icon">📧</span>預約列表</li>
+            <li><span class="menu-icon">👥</span>會員列表</li>
+            <li><span class="menu-icon">👤</span>會員中心</li>
+            <li><span class="menu-icon">🏢</span>加入公司</li>
+            <li><span class="menu-icon">📞</span>聯絡客服</li>
+            <li><span class="menu-icon">🚪</span>登出</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="divider">
+            <span class="divider-text">公司申請資訊</span>
+        </div>
+
+        <div class="info-section">
+            <div class="info-row">
+                <div class="info-label">名稱</div>
+                <div class="info-value">優居房屋仲介</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">管理者</div>
+                <div class="info-value">張經理</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">公司電話</div>
+                <div class="info-value">02-2345-6789</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">公司地址</div>
+                <div class="info-value">台北市大安區和平東路123號</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">申請時間</div>
+                <div class="info-value">2025/09/15 10:30:25</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">申請狀態</div>
+                <div class="info-value">
+                    <span class="status-badge status-pending">審核中</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-danger" onclick="cancelApply()">取消申請</button>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function cancelApply() {
+            if (confirm('確定要取消申請嗎？')) {
+                alert('已取消申請');
+            }
+        }
+    </script>
+</body>
+</html>

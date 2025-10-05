@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 員工資訊</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ddd, transparent);
+        }
+
+        .divider::before {
+            left: 0;
+        }
+
+        .divider::after {
+            right: 0;
+        }
+
+        .divider-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2196F3;
+            padding: 0 15px;
+            background: #f5f7fa;
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .info-row {
+            display: flex;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            background: #f8f9fa;
+            padding: 15px;
+            font-weight: 600;
+            color: #666;
+            min-width: 100px;
+            border-right: 1px solid #f0f0f0;
+        }
+
+        .info-value {
+            flex: 1;
+            padding: 15px;
+            color: #333;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn">←</button>
+        <div class="header-title">員工資訊</div>
+    </div>
+
+    <div class="container">
+        <div class="divider">
+            <span class="divider-text">員工資訊</span>
+        </div>
+
+        <div class="info-section">
+            <div class="info-row">
+                <div class="info-label">名稱</div>
+                <div class="info-value">王小明</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">等級</div>
+                <div class="info-value">3</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">性別</div>
+                <div class="info-value">男</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">公司</div>
+                <div class="info-value">優居房屋仲介</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">主管</div>
+                <div class="info-value">張經理</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">主管信箱</div>
+                <div class="info-value">manager@youju.com</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">員工狀態</div>
+                <div class="info-value">
+                    <span class="status-badge">正式員工</span>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">生日</div>
+                <div class="info-value">1990/05/15</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">聯絡電話</div>
+                <div class="info-value">0912-345-678</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">聯絡地址</div>
+                <div class="info-value">台北市大安區忠孝東路123號</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">信箱</div>
+                <div class="info-value">ming123@gmail.com</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">負責城市</div>
+                <div class="info-value">台北市</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">負責區域</div>
+                <div class="info-value">大安區、信義區</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

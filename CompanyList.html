@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 公司列表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: #1a1a2e;
+            transition: left 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            padding: 20px;
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 20px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        .menu-icon {
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .filter-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .company-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .company-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2196F3;
+            margin-bottom: 15px;
+        }
+
+        .company-info {
+            line-height: 2;
+            margin-bottom: 15px;
+        }
+
+        .info-line {
+            font-size: 15px;
+            color: #666;
+        }
+
+        .apply-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <div class="header-title">公司列表</div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>🏠</span>
+            租重點
+        </div>
+        <ul class="sidebar-menu">
+            <li><span class="menu-icon">🏠</span>租屋列表</li>
+            <li><span class="menu-icon">🏡</span>我的租屋</li>
+            <li><span class="menu-icon">☁️</span>上傳租屋</li>
+            <li><span class="menu-icon">📧</span>預約列表</li>
+            <li><span class="menu-icon">👥</span>會員列表</li>
+            <li><span class="menu-icon">👤</span>會員中心</li>
+            <li><span class="menu-icon">🏢</span>加入公司</li>
+            <li><span class="menu-icon">📞</span>聯絡客服</li>
+            <li><span class="menu-icon">🚪</span>登出</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="filter-section">
+            <div class="filter-row">
+                <input type="text" class="filter-input" id="textQueryName" placeholder="搜尋公司名稱">
+            </div>
+            <div class="filter-row">
+                <input type="text" class="filter-input" id="textQueryUnifiedBusinessNo" placeholder="搜尋統一編號">
+            </div>
+            <button class="filter-btn" onclick="searchCompany()">搜尋</button>
+        </div>
+
+        <div id="companyList"></div>
+    </div>
+
+    <script>
+        const companies = [
+            {
+                id: 1,
+                name: "優居房屋仲介",
+                unifiedBusinessNo: "12345678",
+                address: "台北市大安區和平東路123號",
+                owner: "張經理",
+                phone: "02-2345-6789",
+                mail: "service@youju.com"
+            },
+            {
+                id: 2,
+                name: "安心不動產",
+                unifiedBusinessNo: "23456789",
+                address: "新北市板橋區文化路二段456號",
+                owner: "李經理",
+                phone: "02-3456-7890",
+                mail: "info@anxin.com"
+            },
+            {
+                id: 3,
+                name: "佳居房屋",
+                unifiedBusinessNo: "34567890",
+                address: "台中市西屯區文心路三段789號",
+                owner: "王經理",
+                phone: "04-2234-5678",
+                mail: "contact@jiaju.com"
+            },
+            {
+                id: 4,
+                name: "好家園不動產",
+                unifiedBusinessNo: "45678901",
+                address: "高雄市前鎮區中山二路321號",
+                owner: "陳經理",
+                phone: "07-3345-6789",
+                mail: "service@haojia.com"
+            },
+            {
+                id: 5,
+                name: "築夢房屋仲介",
+                unifiedBusinessNo: "56789012",
+                address: "台南市東區中華東路一路654號",
+                owner: "林經理",
+                phone: "06-2456-7890",
+                mail: "info@zhumeng.com"
+            },
+            {
+                id: 6,
+                name: "家和不動產",
+                unifiedBusinessNo: "67890123",
+                address: "桃園市中壢區中央西路二段987號",
+                owner: "黃經理",
+                phone: "03-4567-8901",
+                mail: "service@jiahe.com"
+            },
+            {
+                id: 7,
+                name: "幸福居房屋",
+                unifiedBusinessNo: "78901234",
+                address: "新竹市東區光復路一段234號",
+                owner: "吳經理",
+                phone: "03-5678-9012",
+                mail: "contact@xingfu.com"
+            },
+            {
+                id: 8,
+                name: "樂居不動產",
+                unifiedBusinessNo: "89012345",
+                address: "台北市內湖區瑞光路567號",
+                owner: "鄭經理",
+                phone: "02-8765-4321",
+                mail: "info@leju.com"
+            },
+            {
+                id: 9,
+                name: "宜居房屋仲介",
+                unifiedBusinessNo: "90123456",
+                address: "新北市新莊區中正路890號",
+                owner: "周經理",
+                phone: "02-9876-5432",
+                mail: "service@yiju.com"
+            },
+            {
+                id: 10,
+                name: "安家不動產",
+                unifiedBusinessNo: "01234567",
+                address: "台中市北屯區崇德路二段123號",
+                owner: "蔡經理",
+                phone: "04-2987-6543",
+                mail: "contact@anjia.com"
+            }
+        ];
+
+        function renderCompanies() {
+            const container = document.getElementById('companyList');
+            container.innerHTML = companies.map(company => `
+                <div class="company-card">
+                    <div class="company-name">${company.name}</div>
+                    <div class="company-info">
+                        <div class="info-line">統一編號：${company.unifiedBusinessNo}</div>
+                        <div class="info-line">地址：${company.address}</div>
+                        <div class="info-line">負責人：${company.owner}</div>
+                        <div class="info-line">電話：${company.phone}</div>
+                        <div class="info-line">信箱：${company.mail}</div>
+                    </div>
+                    <button class="apply-btn" onclick="applyCompany(${company.id}, '${company.name}')">申請加入</button>
+                </div>
+            `).join('');
+        }
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function searchCompany() {
+            alert('執行搜尋');
+            renderCompanies();
+        }
+
+        function applyCompany(id, name) {
+            if (confirm(`確定要申請加入 ${name} 嗎？`)) {
+                alert(`已送出申請至 ${name}，請等待審核`);
+            }
+        }
+
+        renderCompanies();
+    </script>
+</body>
+</html>
