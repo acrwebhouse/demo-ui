@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>租重點平台 - 投資人展示報告</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            page-break-after: always;
+        }
+
+        /* 封面頁 */
+        .cover-page {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .cover-content {
+            max-width: 800px;
+        }
+
+        .logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            font-weight: 300;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .stat-item {
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-value {
+            font-size: 42px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* 內容頁 */
+        .content-page {
+            background: #f5f7fa;
+        }
+
+        .content-wrapper {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 900;
+            color: #2196F3;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .phone-mockup {
+            position: relative;
+            width: 100%;
+            padding-top: 200%;
+            background: #1a1a1a;
+            border-radius: 40px;
+            overflow: hidden;
+            margin: 20px;
+        }
+
+        .phone-screen {
+            position: absolute;
+            top: 30px;
+            left: 15px;
+            right: 15px;
+            bottom: 30px;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #1a1a1a;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+
+        .screen-content {
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+        }
+
+        .screen-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            transform: scale(1);
+            transform-origin: top left;
+        }
+
+        .feature-info {
+            padding: 30px;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2196F3;
+            margin-bottom: 10px;
+        }
+
+        .feature-desc {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .feature-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .feature-tag {
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* 簡化截圖卡片 */
+        .screenshot-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .screenshot-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2196F3;
+            margin-bottom: 15px;
+        }
+
+        .screenshot-desc {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .screenshot-preview {
+            width: 100%;
+            max-width: 375px;
+            margin: 0 auto;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 8px solid #1a1a1a;
+        }
+
+        .screenshot-preview img {
+            width: 100%;
+            display: block;
+        }
+
+        /* 總結頁 */
+        .summary-page {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .summary-content {
+            max-width: 900px;
+        }
+
+        .summary-title {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 30px;
+        }
+
+        .highlights-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .highlight-card {
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            text-align: left;
+        }
+
+        .highlight-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .highlight-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .highlight-text {
+            font-size: 16px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        @media print {
+            .page {
+                page-break-after: always;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 36px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .highlights-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 封面頁 -->
+    <div class="page cover-page">
+        <div class="cover-content">
+            <div class="logo">🏠</div>
+            <h1 class="title">租重點平台</h1>
+            <p class="subtitle">新一代智能租屋管理系統</p>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">29+</div>
+                    <div class="stat-label">核心功能模組</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">行動優先設計</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">AI</div>
+                    <div class="stat-label">智能推薦系統</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第一頁：核心功能 -->
+    <div class="page content-page">
+        <div class="content-wrapper">
+            <h2 class="section-title">核心功能展示</h2>
+
+            <div class="screenshot-card">
+                <h3 class="screenshot-title">🏡 房源管理系統</h3>
+                <p class="screenshot-desc">
+                    完整的房源列表展示，支援多條件篩選、收藏功能。每個房源卡片包含照片、價格、坪數、格局等關鍵資訊，使用者體驗流暢直觀。
+                </p>
+                <div class="feature-tags">
+                    <span class="feature-tag">房源列表</span>
+                    <span class="feature-tag">詳細資訊</span>
+                    <span class="feature-tag">房東專區</span>
+                    <span class="feature-tag">房源上傳</span>
+                </div>
+            </div>
+
+            <div class="screenshot-card">
+                <h3 class="screenshot-title">🤖 AI 智能推薦</h3>
+                <p class="screenshot-desc">
+                    創新的流浪房仲推薦系統，透過 AI 分析房仲背景和行為，提供個人化房源推薦。包含學習進度追蹤、市場洞察、成功案例分享等完整功能。
+                </p>
+                <div class="feature-tags">
+                    <span class="feature-tag">AI 推薦</span>
+                    <span class="feature-tag">數據分析</span>
+                    <span class="feature-tag">圖表視覺化</span>
+                    <span class="feature-tag">新手任務</span>
+                </div>
+            </div>
+
+            <div class="screenshot-card">
+                <h3 class="screenshot-title">💬 AI 聊天機器人</h3>
+                <p class="screenshot-desc">
+                    智能客服「點點」提供 24/7 線上諮詢服務，可直接推薦房源、解答疑問。聊天介面友善，支援房源卡片展示，大幅提升用戶互動體驗。
+                </p>
+                <div class="feature-tags">
+                    <span class="feature-tag">智能對話</span>
+                    <span class="feature-tag">房源推薦</span>
+                    <span class="feature-tag">即時回覆</span>
+                </div>
+            </div>
+
+            <div class="screenshot-card">
+                <h3 class="screenshot-title">🎯 媒合配對系統</h3>
+                <p class="screenshot-desc">
+                    根據用戶需求智能媒合適合的房源，支援 LINE 帳號匯入，顯示配對度百分比。系統會推薦 3-5 個高度匹配的物件，加速成交效率。
+                </p>
+                <div class="feature-tags">
+                    <span class="feature-tag">智能媒合</span>
+                    <span class="feature-tag">配對度分析</span>
+                    <span class="feature-tag">LINE 整合</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第二頁：商業功能 -->
+    <div class="page content-page">
+        <div class="content-wrapper">
+            <h2 class="section-title">商業運營功能</h2>
+
+            <div class="screenshot-card">
+                <h3 class="screenshot-title">🏢 企業管理系統</h3>
+                <p class="screenshot-desc">
+                    完整的企業申請、審核、管理流程。包含公司列表、員工管理、交易記錄、開發管理、物件管理等多個模組，滿足 B2B 業務需求。
+                </p>
+                <div class="feature-tags">
+                    <span class="feature-tag">企業申請</span>
+                    <span class="feature-tag">審核流程</span>
+                    <span class="feature-tag">員工管理</span>
+                    <span class="feature-tag">交易記錄</span>
+                    <span class="feature-tag">開發管理</span>
+                </div>
+            </div>
+
+            <div class="screenshot-card">
+                <h3 class="screenshot-title">💰 金流支付系統</h3>
+                <p class="screenshot-desc">
+                    第三方金流整合，支援廣告刊登、合約付款等多種支付場景。提供基本版、進階版、專業版三種方案，彈性滿足不同需求。
+                </p>
+                <div class="feature-tags">
+                    <span class="feature-tag">多元支付</span>
+                    <span class="feature-tag">方案選擇</span>
+                    <span class="feature-tag">信用卡</span>
+                    <span class="feature-tag">LINE Pay</span>
+                    <span class="feature-tag">ATM</span>
+                    <span class="feature-tag">超商付款</span>
+                </div>
+            </div>
+
+            <div class="screenshot-card">
+                <h3 class="screenshot-title">📝 電子簽約系統</h3>
+                <p class="screenshot-desc">
+                    完整的線上簽約流程，包含合約選擇、條款確認、電子簽名、完成通知四個步驟。支援合約預覽、PDF 下載，確保法律效力。
+                </p>
+                <div class="feature-tags">
+                    <span class="feature-tag">電子簽名</span>
+                    <span class="feature-tag">合約管理</span>
+                    <span class="feature-tag">步驟引導</span>
+                </div>
+            </div>
+
+            <div class="screenshot-card">
+                <h3 class="screenshot-title">🏘️ 包租代管服務</h3>
+                <p class="screenshot-desc">
+                    專業的包租代管服務平台，展示合作夥伴、服務項目、價格方案。提供完整的物業管理解決方案，降低房東管理負擔。
+                </p>
+                <div class="feature-tags">
+                    <span class="feature-tag">代管服務</span>
+                    <span class="feature-tag">合作夥伴</span>
+                    <span class="feature-tag">價格透明</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第三頁：創新功能與總結 -->
+    <div class="page content-page">
+        <div class="content-wrapper">
+            <h2 class="section-title">創新體驗功能</h2>
+
+            <div class="screenshot-card">
+                <h3 class="screenshot-title">🗺️ 地圖找房功能</h3>
+                <p class="screenshot-desc">
+                    整合地圖 API，在地圖上直接標示房源位置與價格。使用者可視覺化瀏覽區域房源分佈，點擊標記查看詳細資訊，提供更直觀的找房體驗。
+                </p>
+                <div class="feature-tags">
+                    <span class="feature-tag">地圖整合</span>
+                    <span class="feature-tag">視覺化搜尋</span>
+                    <span class="feature-tag">位置標記</span>
+                </div>
+            </div>
+
+            <div class="screenshot-card">
+                <h3 class="screenshot-title">🏗️ 3D 格局瀏覽</h3>
+                <p class="screenshot-desc">
+                    革命性的 3D 室內格局展示，使用 Three.js 技術渲染真實房間佈局。包含家具、門窗、照明等細節，支援 360° 旋轉查看，讓租客身歷其境。
+                </p>
+                <div class="feature-tags">
+                    <span class="feature-tag">3D 渲染</span>
+                    <span class="feature-tag">互動瀏覽</span>
+                    <span class="feature-tag">三種風格</span>
+                    <span class="feature-tag">Three.js</span>
+                </div>
+            </div>
+
+            <div class="screenshot-card">
+                <h3 class="screenshot-title">📅 預約看房系統</h3>
+                <p class="screenshot-desc">
+                    完整的看房預約流程，包含預約列表、詳細資訊、時間選擇、確認通知。支援行事曆檢視，避免時間衝突，提升服務效率。
+                </p>
+                <div class="feature-tags">
+                    <span class="feature-tag">線上預約</span>
+                    <span class="feature-tag">時間管理</span>
+                    <span class="feature-tag">通知提醒</span>
+                </div>
+            </div>
+
+            <div class="screenshot-card">
+                <h3 class="screenshot-title">👥 會員管理系統</h3>
+                <p class="screenshot-desc">
+                    完善的會員資料管理，包含會員列表、個人資訊、權限設定、活動記錄等。支援多角色管理，滿足平台、房東、房仲、租客不同需求。
+                </p>
+                <div class="feature-tags">
+                    <span class="feature-tag">會員管理</span>
+                    <span class="feature-tag">角色權限</span>
+                    <span class="feature-tag">資料完整</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 總結頁 -->
+    <div class="page summary-page">
+        <div class="summary-content">
+            <h2 class="summary-title">平台核心優勢</h2>
+            <p class="subtitle">打造最專業的智能租屋生態系統</p>
+
+            <div class="highlights-grid">
+                <div class="highlight-card">
+                    <div class="highlight-icon">🚀</div>
+                    <h3 class="highlight-title">創新技術應用</h3>
+                    <p class="highlight-text">
+                        AI 智能推薦、3D 格局展示、地圖找房等前沿技術，為用戶帶來革命性的租屋體驗。
+                    </p>
+                </div>
+
+                <div class="highlight-card">
+                    <div class="highlight-icon">💼</div>
+                    <h3 class="highlight-title">完整商業閉環</h3>
+                    <p class="highlight-text">
+                        從房源管理、媒合配對、線上簽約到金流支付，打造完整的租屋交易生態系統。
+                    </p>
+                </div>
+
+                <div class="highlight-card">
+                    <div class="highlight-icon">📱</div>
+                    <h3 class="highlight-title">行動優先設計</h3>
+                    <p class="highlight-text">
+                        100% 響應式設計，完美適配手機、平板等各種裝置，隨時隨地輕鬆使用。
+                    </p>
+                </div>
+
+                <div class="highlight-card">
+                    <div class="highlight-icon">🎯</div>
+                    <h3 class="highlight-title">精準用戶定位</h3>
+                    <p class="highlight-text">
+                        服務房東、房仲、租客、企業等多方角色，滿足不同使用場景的個性化需求。
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-top: 60px; font-size: 18px; opacity: 0.9;">
+                <p>租重點平台 - 讓租屋變得更簡單、更智能、更安心</p>
+                <p style="margin-top: 20px; font-size: 14px;">© 2024 租重點科技有限公司</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
