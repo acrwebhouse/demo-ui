@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 開通廣告權限</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: #1a1a2e;
+            transition: left 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            padding: 20px;
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 20px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        .menu-icon {
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .status-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .status-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .status-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .status-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .status-text {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .info-box {
+            background: #fff3e0;
+            border-left: 4px solid #FF9800;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #FF9800;
+            margin-bottom: 8px;
+        }
+
+        .info-box-text {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .plan-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .plan-card.recommended {
+            border-color: #2196F3;
+            box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
+        }
+
+        .plan-header {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 15px;
+            text-align: center;
+        }
+
+        .plan-card.recommended .plan-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+        }
+
+        .plan-badge {
+            display: inline-block;
+            background: #FF9800;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .plan-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .plan-price {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2196F3;
+            margin-bottom: 5px;
+        }
+
+        .plan-card.recommended .plan-price {
+            color: white;
+        }
+
+        .plan-unit {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .plan-card.recommended .plan-unit {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .plan-body {
+            padding: 20px;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .plan-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plan-features li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-icon {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .plan-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .plan-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 450px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 20px 25px;
+            font-size: 20px;
+            font-weight: 600;
+            border-radius: 16px 16px 0 0;
+            text-align: center;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .payment-summary {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .summary-row.total {
+            border-top: 2px solid #2196F3;
+            margin-top: 10px;
+            padding-top: 15px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #2196F3;
+        }
+
+        .payment-methods {
+            margin-bottom: 20px;
+        }
+
+        .payment-method-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #666;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-option:hover {
+            border-color: #2196F3;
+            background: #f8f9fa;
+        }
+
+        .payment-option input[type="radio"] {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .payment-option-content {
+            flex: 1;
+        }
+
+        .payment-option-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .payment-option-desc {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .payment-option-icon {
+            font-size: 28px;
+            margin-left: 10px;
+        }
+
+        .modal-footer {
+            padding: 15px 25px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            background: #f0f0f0;
+            color: #666;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-confirm {
+            flex: 2;
+            padding: 12px;
+            background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <div class="header-title">開通廣告權限</div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>🏠</span>
+            租重點
+        </div>
+        <ul class="sidebar-menu">
+            <li><span class="menu-icon">🏠</span>租屋列表</li>
+            <li><span class="menu-icon">🏡</span>我的租屋</li>
+            <li><span class="menu-icon">☁️</span>上傳租屋</li>
+            <li><span class="menu-icon">📧</span>預約列表</li>
+            <li><span class="menu-icon">👥</span>會員列表</li>
+            <li><span class="menu-icon">👤</span>會員中心</li>
+            <li><span class="menu-icon">🏢</span>加入公司</li>
+            <li><span class="menu-icon">📞</span>聯絡客服</li>
+            <li><span class="menu-icon">🚪</span>登出</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="status-section">
+            <div class="status-header">
+                <div class="status-icon">📢</div>
+                <div class="status-title">廣告刊登權限</div>
+                <div class="status-text">目前狀態：<span style="color: #f44336; font-weight: 600;">尚未開通</span></div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">💡 開通廣告權限的好處</div>
+            <div class="info-box-text">
+                • 您的物件將優先顯示在搜尋結果前列<br>
+                • 獲得更多曝光機會，提升成交率<br>
+                • 享有專屬廣告版位與推薦標籤<br>
+                • 可使用進階數據分析功能
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <div class="plan-header">
+                <div class="plan-name">基礎方案</div>
+                <div class="plan-price">NT$ 299</div>
+                <div class="plan-unit">/ 月</div>
+            </div>
+            <div class="plan-body">
+                <ul class="plan-features">
+                    <li><span class="feature-icon">✓</span>最多刊登 3 個物件</li>
+                    <li><span class="feature-icon">✓</span>優先顯示 7 天</li>
+                    <li><span class="feature-icon">✓</span>基礎數據分析</li>
+                    <li><span class="feature-icon">✓</span>客服支援</li>
+                </ul>
+                <button class="plan-btn" onclick="showPayment('基礎方案', 299)">立即開通</button>
+            </div>
+        </div>
+
+        <div class="plan-card recommended">
+            <div class="plan-header">
+                <div class="plan-badge">🔥 最熱門</div>
+                <div class="plan-name">進階方案</div>
+                <div class="plan-price">NT$ 599</div>
+                <div class="plan-unit">/ 月</div>
+            </div>
+            <div class="plan-body">
+                <ul class="plan-features">
+                    <li><span class="feature-icon">✓</span>最多刊登 10 個物件</li>
+                    <li><span class="feature-icon">✓</span>優先顯示 14 天</li>
+                    <li><span class="feature-icon">✓</span>進階數據分析</li>
+                    <li><span class="feature-icon">✓</span>專屬推薦標籤</li>
+                    <li><span class="feature-icon">✓</span>優先客服支援</li>
+                    <li><span class="feature-icon">✓</span>社群媒體曝光</li>
+                </ul>
+                <button class="plan-btn" onclick="showPayment('進階方案', 599)">立即開通</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <div class="plan-header">
+                <div class="plan-name">專業方案</div>
+                <div class="plan-price">NT$ 1,299</div>
+                <div class="plan-unit">/ 月</div>
+            </div>
+            <div class="plan-body">
+                <ul class="plan-features">
+                    <li><span class="feature-icon">✓</span>無限制刊登物件</li>
+                    <li><span class="feature-icon">✓</span>優先顯示 30 天</li>
+                    <li><span class="feature-icon">✓</span>完整數據分析報告</li>
+                    <li><span class="feature-icon">✓</span>獨家推薦標籤</li>
+                    <li><span class="feature-icon">✓</span>24小時專屬客服</li>
+                    <li><span class="feature-icon">✓</span>多平台聯合曝光</li>
+                    <li><span class="feature-icon">✓</span>專業攝影服務</li>
+                    <li><span class="feature-icon">✓</span>免費市場分析報告</li>
+                </ul>
+                <button class="plan-btn" onclick="showPayment('專業方案', 1299)">立即開通</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 付款Modal -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>💳</span> 確認付款資訊
+            </div>
+            <div class="modal-body">
+                <div class="payment-summary">
+                    <div class="summary-row">
+                        <span>方案名稱</span>
+                        <span id="planName">進階方案</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>方案費用</span>
+                        <span id="planPrice">NT$ 599</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>優惠折扣</span>
+                        <span style="color: #4CAF50;">-NT$ 0</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>應付金額</span>
+                        <span id="totalPrice">NT$ 599</span>
+                    </div>
+                </div>
+
+                <div class="payment-methods">
+                    <div class="payment-method-title">選擇付款方式</div>
+
+                    <label class="payment-option">
+                        <input type="radio" name="payment" value="credit" checked>
+                        <div class="payment-option-content">
+                            <div class="payment-option-name">信用卡 / 金融卡</div>
+                            <div class="payment-option-desc">支援 VISA、Master、JCB</div>
+                        </div>
+                        <div class="payment-option-icon">💳</div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="payment" value="linepay">
+                        <div class="payment-option-content">
+                            <div class="payment-option-name">LINE Pay</div>
+                            <div class="payment-option-desc">使用 LINE Pay 快速付款</div>
+                        </div>
+                        <div class="payment-option-icon">💚</div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="payment" value="atm">
+                        <div class="payment-option-content">
+                            <div class="payment-option-name">ATM 轉帳</div>
+                            <div class="payment-option-desc">虛擬帳號，3天內完成繳費</div>
+                        </div>
+                        <div class="payment-option-icon">🏦</div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="payment" value="store">
+                        <div class="payment-option-content">
+                            <div class="payment-option-name">超商代碼繳費</div>
+                            <div class="payment-option-desc">7-11、全家、萊爾富</div>
+                        </div>
+                        <div class="payment-option-icon">🏪</div>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closePayment()">取消</button>
+                <button class="btn-confirm" onclick="processPayment()">確認付款</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function showPayment(planName, price) {
+            document.getElementById('planName').textContent = planName;
+            document.getElementById('planPrice').textContent = 'NT$ ' + price.toLocaleString();
+            document.getElementById('totalPrice').textContent = 'NT$ ' + price.toLocaleString();
+            document.getElementById('paymentModal').classList.add('active');
+        }
+
+        function closePayment() {
+            document.getElementById('paymentModal').classList.remove('active');
+        }
+
+        function processPayment() {
+            const selectedPayment = document.querySelector('input[name="payment"]:checked').value;
+            let paymentName = '';
+
+            switch(selectedPayment) {
+                case 'credit':
+                    paymentName = '信用卡';
+                    break;
+                case 'linepay':
+                    paymentName = 'LINE Pay';
+                    break;
+                case 'atm':
+                    paymentName = 'ATM 轉帳';
+                    break;
+                case 'store':
+                    paymentName = '超商代碼';
+                    break;
+            }
+
+            alert('正在前往 ' + paymentName + ' 付款頁面...\n\n（實際應用中會跳轉至第三方金流）');
+
+            // 模擬付款完成
+            setTimeout(() => {
+                alert('付款成功！廣告權限已開通');
+                closePayment();
+            }, 1500);
+        }
+
+        // 點擊 Modal 外部關閉
+        window.onclick = function(event) {
+            const modal = document.getElementById('paymentModal');
+            if (event.target === modal) {
+                closePayment();
+            }
+        };
+    </script>
+</body>
+</html>

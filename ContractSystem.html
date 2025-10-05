@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 簽約系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: #1a1a2e;
+            transition: left 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            padding: 20px;
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 20px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        .menu-icon {
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .house-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .house-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #e0e6ed;
+        }
+
+        .house-content {
+            padding: 15px;
+        }
+
+        .house-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 8px;
+        }
+
+        .house-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+
+        .house-info {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .house-info div {
+            margin-bottom: 4px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-view {
+            padding: 10px;
+            background: #f0f0f0;
+            color: #666;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-contract {
+            padding: 10px;
+            background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-contract:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 450px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 20px 25px;
+            font-size: 20px;
+            font-weight: 600;
+            border-radius: 16px 16px 0 0;
+            text-align: center;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .step.active .step-circle {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+        }
+
+        .step.completed .step-circle {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: #2196F3;
+            font-weight: 600;
+        }
+
+        .contract-section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .contract-terms {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #666;
+        }
+
+        .checkbox-agreement {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fff3e0;
+            border-radius: 8px;
+        }
+
+        .checkbox-agreement input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-top: 2px;
+        }
+
+        .checkbox-agreement label {
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            line-height: 1.6;
+        }
+
+        .signature-section {
+            margin-bottom: 20px;
+        }
+
+        .signature-pad {
+            border: 2px dashed #2196F3;
+            border-radius: 8px;
+            height: 150px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .signature-pad:hover {
+            background: #e3f2fd;
+        }
+
+        .signature-pad.signed {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+
+        .modal-footer {
+            padding: 15px 25px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            background: #f0f0f0;
+            color: #666;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-next {
+            flex: 2;
+            padding: 12px;
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-next:disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .btn-submit {
+            flex: 2;
+            padding: 12px;
+            background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        .success-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .success-text {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <div class="header-title">我的租屋</div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>🏠</span>
+            租重點
+        </div>
+        <ul class="sidebar-menu">
+            <li><span class="menu-icon">🏠</span>租屋列表</li>
+            <li><span class="menu-icon">🏡</span>我的租屋</li>
+            <li><span class="menu-icon">☁️</span>上傳租屋</li>
+            <li><span class="menu-icon">📧</span>預約列表</li>
+            <li><span class="menu-icon">👥</span>會員列表</li>
+            <li><span class="menu-icon">👤</span>會員中心</li>
+            <li><span class="menu-icon">🏢</span>加入公司</li>
+            <li><span class="menu-icon">📞</span>聯絡客服</li>
+            <li><span class="menu-icon">🚪</span>登出</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="house-card">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='180'%3E%3Crect fill='%23e0e6ed' width='400' height='180'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%232196F3' text-anchor='middle' dy='.3em'%3E台北市大安區套房%3C/text%3E%3C/svg%3E" class="house-image" alt="房屋圖片">
+            <div class="house-content">
+                <div class="house-title">捷運忠孝復興站旁-溫馨套房</div>
+                <div class="house-price">NT$ 28,000 / 月</div>
+                <div class="house-info">
+                    <div>📍 台北市大安區復興南路123號</div>
+                    <div>🏠 獨立套房 | 15 坪</div>
+                    <div>🚇 距捷運忠孝復興站步行 3 分鐘</div>
+                    <div>👤 承租人：王小明</div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-view">查看詳情</button>
+                    <button class="btn-contract" onclick="openContract()">🖊️ 成交簽約</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="house-card">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='180'%3E%3Crect fill='%23e0e6ed' width='400' height='180'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%232196F3' text-anchor='middle' dy='.3em'%3E新北市板橋區整層%3C/text%3E%3C/svg%3E" class="house-image" alt="房屋圖片">
+            <div class="house-content">
+                <div class="house-title">板橋府中站-全新電梯大樓</div>
+                <div class="house-price">NT$ 35,000 / 月</div>
+                <div class="house-info">
+                    <div>📍 新北市板橋區府中路456號</div>
+                    <div>🏠 整層住家 | 25 坪</div>
+                    <div>🚇 距捷運府中站步行 2 分鐘</div>
+                    <div>👤 承租人：李美玲</div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-view">查看詳情</button>
+                    <button class="btn-contract" onclick="openContract()">🖊️ 成交簽約</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="house-card">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='180'%3E%3Crect fill='%23e0e6ed' width='400' height='180'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%232196F3' text-anchor='middle' dy='.3em'%3E台北市中山區套房%3C/text%3E%3C/svg%3E" class="house-image" alt="房屋圖片">
+            <div class="house-content">
+                <div class="house-title">南京復興站-高樓層採光佳</div>
+                <div class="house-price">NT$ 25,000 / 月</div>
+                <div class="house-info">
+                    <div>📍 台北市中山區南京東路789號</div>
+                    <div>🏠 獨立套房 | 12 坪</div>
+                    <div>🚇 距捷運南京復興站步行 5 分鐘</div>
+                    <div>👤 承租人：張大偉</div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-view">查看詳情</button>
+                    <button class="btn-contract" onclick="openContract()">🖊️ 成交簽約</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 簽約Modal -->
+    <div class="modal" id="contractModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>📝</span> 線上簽約系統
+            </div>
+            <div class="modal-body">
+                <!-- 步驟指示器 -->
+                <div class="step-indicator">
+                    <div class="step active" id="step1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">確認資訊</div>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">審閱條款</div>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">電子簽名</div>
+                    </div>
+                    <div class="step" id="step4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">完成簽約</div>
+                    </div>
+                </div>
+
+                <!-- 步驟1：確認資訊 -->
+                <div id="stepContent1" class="step-content">
+                    <div class="contract-section">
+                        <div class="section-title">🏠 物件資訊</div>
+                        <div class="info-row">
+                            <span class="info-label">物件名稱</span>
+                            <span class="info-value">捷運忠孝復興站旁-溫馨套房</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">物件地址</span>
+                            <span class="info-value">台北市大安區復興南路123號</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">租金</span>
+                            <span class="info-value">NT$ 28,000 / 月</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">押金</span>
+                            <span class="info-value">NT$ 56,000（2個月）</span>
+                        </div>
+                    </div>
+
+                    <div class="contract-section">
+                        <div class="section-title">👤 承租人資訊</div>
+                        <div class="info-row">
+                            <span class="info-label">姓名</span>
+                            <span class="info-value">王小明</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">身分證字號</span>
+                            <span class="info-value">A123456789</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">聯絡電話</span>
+                            <span class="info-value">0912-345-678</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">電子郵件</span>
+                            <span class="info-value">ming123@gmail.com</span>
+                        </div>
+                    </div>
+
+                    <div class="contract-section">
+                        <div class="section-title">📅 租賃期限</div>
+                        <div class="info-row">
+                            <span class="info-label">起租日期</span>
+                            <span class="info-value">2025/11/01</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">到期日期</span>
+                            <span class="info-value">2026/10/31</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">租期</span>
+                            <span class="info-value">12 個月</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 步驟2：審閱條款 -->
+                <div id="stepContent2" class="step-content" style="display: none;">
+                    <div class="contract-section">
+                        <div class="section-title">📄 租賃契約條款</div>
+                        <div class="contract-terms">
+                            <h4>第一條 租賃標的</h4>
+                            <p>出租人同意將坐落於台北市大安區復興南路123號之房屋出租予承租人使用。</p>
+
+                            <h4>第二條 租賃期間</h4>
+                            <p>租賃期間自民國114年11月1日起至民國115年10月31日止，共計12個月。</p>
+
+                            <h4>第三條 租金約定</h4>
+                            <p>每月租金為新台幣貳萬捌仟元整（NT$28,000），承租人應於每月5日前支付當月租金。</p>
+
+                            <h4>第四條 押金</h4>
+                            <p>承租人應支付押金新台幣伍萬陸仟元整（NT$56,000），出租人應於租期屆滿且點交無誤後無息退還。</p>
+
+                            <h4>第五條 使用限制</h4>
+                            <p>承租人應以善良管理人之注意使用房屋，不得擅自改建、增建或變更使用性質。</p>
+
+                            <h4>第六條 修繕責任</h4>
+                            <p>房屋及附屬設備之修繕，由出租人負責。但因承租人之過失所致者，由承租人負責修繕。</p>
+
+                            <h4>第七條 提前終止</h4>
+                            <p>如欲提前終止租約，應於30日前通知他方，並依約定賠償。</p>
+
+                            <h4>第八條 爭議處理</h4>
+                            <p>雙方因本契約發生爭議時，應本誠信原則協商解決。如協商不成，同意以台灣台北地方法院為第一審管轄法院。</p>
+                        </div>
+
+                        <div class="checkbox-agreement">
+                            <input type="checkbox" id="agreeTerms" onchange="toggleNextButton()">
+                            <label for="agreeTerms">
+                                我已詳細閱讀並同意上述所有租賃契約條款，願意遵守契約內容之各項規定。
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 步驟3：電子簽名 -->
+                <div id="stepContent3" class="step-content" style="display: none;">
+                    <div class="contract-section">
+                        <div class="section-title">✍️ 電子簽名</div>
+                        <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
+                            請點擊下方簽名區域進行電子簽名，確認您同意簽署本租賃契約。
+                        </p>
+                        <div class="signature-pad" id="signaturePad" onclick="doSign()">
+                            <span>點擊此處進行電子簽名</span>
+                        </div>
+                    </div>
+
+                    <div class="contract-section" style="margin-top: 20px;">
+                        <div class="section-title">🔐 身分驗證</div>
+                        <div class="info-row">
+                            <span class="info-label">驗證方式</span>
+                            <span class="info-value" style="color: #4CAF50;">✓ 手機簡訊 OTP</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">簽署時間</span>
+                            <span class="info-value" id="signTime">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">IP 位址</span>
+                            <span class="info-value">203.123.45.67</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 步驟4：完成簽約 -->
+                <div id="stepContent4" class="step-content" style="display: none;">
+                    <div class="success-message">
+                        <div class="success-icon">🎉</div>
+                        <div class="success-title">簽約成功！</div>
+                        <div class="success-text">
+                            恭喜您完成線上簽約流程！<br><br>
+
+                            契約編號：<strong>RC-2025-001234</strong><br>
+                            簽約時間：<span id="contractTime"></span><br><br>
+
+                            完整的租賃契約已發送至您的電子郵件，<br>
+                            請妥善保存以備日後查閱。<br><br>
+
+                            💰 請於 3 日內完成押金及第一個月租金繳納。<br>
+                            📧 繳費通知已發送至您的信箱。
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeContract()">取消</button>
+                <button class="btn-next" id="nextBtn" onclick="nextStep()">下一步</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let isSigned = false;
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function openContract() {
+            document.getElementById('contractModal').classList.add('active');
+            currentStep = 1;
+            isSigned = false;
+            updateSteps();
+        }
+
+        function closeContract() {
+            if (currentStep === 4) {
+                // 如果已完成，關閉並重新整理
+                document.getElementById('contractModal').classList.remove('active');
+                alert('感謝您使用租重點線上簽約系統！');
+            } else {
+                if (confirm('確定要取消簽約流程嗎？')) {
+                    document.getElementById('contractModal').classList.remove('active');
+                }
+            }
+        }
+
+        function updateSteps() {
+            // 更新步驟指示器
+            for (let i = 1; i <= 4; i++) {
+                const step = document.getElementById('step' + i);
+                const content = document.getElementById('stepContent' + i);
+
+                if (i < currentStep) {
+                    step.classList.add('completed');
+                    step.classList.remove('active');
+                } else if (i === currentStep) {
+                    step.classList.add('active');
+                    step.classList.remove('completed');
+                } else {
+                    step.classList.remove('active', 'completed');
+                }
+
+                if (content) {
+                    content.style.display = i === currentStep ? 'block' : 'none';
+                }
+            }
+
+            // 更新按鈕
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentStep === 1) {
+                nextBtn.textContent = '下一步';
+                nextBtn.onclick = nextStep;
+                nextBtn.disabled = false;
+            } else if (currentStep === 2) {
+                nextBtn.textContent = '下一步';
+                nextBtn.onclick = nextStep;
+                toggleNextButton();
+            } else if (currentStep === 3) {
+                nextBtn.textContent = '確認簽署';
+                nextBtn.onclick = nextStep;
+                nextBtn.disabled = !isSigned;
+            } else if (currentStep === 4) {
+                nextBtn.textContent = '完成';
+                nextBtn.onclick = closeContract;
+                nextBtn.disabled = false;
+                nextBtn.className = 'btn-submit';
+            }
+        }
+
+        function toggleNextButton() {
+            const checkbox = document.getElementById('agreeTerms');
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentStep === 2) {
+                nextBtn.disabled = !checkbox.checked;
+            }
+        }
+
+        function nextStep() {
+            if (currentStep === 3 && !isSigned) {
+                alert('請先完成電子簽名！');
+                return;
+            }
+
+            if (currentStep < 4) {
+                currentStep++;
+
+                if (currentStep === 4) {
+                    // 設定簽約完成時間
+                    const now = new Date();
+                    document.getElementById('contractTime').textContent =
+                        now.getFullYear() + '/' +
+                        String(now.getMonth() + 1).padStart(2, '0') + '/' +
+                        String(now.getDate()).padStart(2, '0') + ' ' +
+                        String(now.getHours()).padStart(2, '0') + ':' +
+                        String(now.getMinutes()).padStart(2, '0');
+                }
+
+                updateSteps();
+            } else {
+                closeContract();
+            }
+        }
+
+        function doSign() {
+            if (!isSigned) {
+                const now = new Date();
+                const timeStr = now.getFullYear() + '/' +
+                    String(now.getMonth() + 1).padStart(2, '0') + '/' +
+                    String(now.getDate()).padStart(2, '0') + ' ' +
+                    String(now.getHours()).padStart(2, '0') + ':' +
+                    String(now.getMinutes()).padStart(2, '0') + ':' +
+                    String(now.getSeconds()).padStart(2, '0');
+
+                document.getElementById('signTime').textContent = timeStr;
+
+                const pad = document.getElementById('signaturePad');
+                pad.classList.add('signed');
+                pad.innerHTML = '✓ 已完成電子簽名<br><small>簽署時間：' + timeStr + '</small>';
+
+                isSigned = true;
+                updateSteps();
+
+                alert('電子簽名完成！\n\n已通過手機簡訊 OTP 驗證');
+            }
+        }
+
+        // 點擊 Modal 外部不關閉（防止誤觸）
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('contractModal')) {
+                // 不做任何事，避免意外關閉
+            }
+        };
+    </script>
+</body>
+</html>

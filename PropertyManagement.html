@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 包租代管服務</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: #1a1a2e;
+            transition: left 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            padding: 20px;
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 20px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        .menu-icon {
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 30px 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+
+        .hero-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .hero-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .hero-subtitle {
+            font-size: 14px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        .service-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .service-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .service-card:hover {
+            border-color: #2196F3;
+            background: #e3f2fd;
+        }
+
+        .service-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .service-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: 15px;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-icon {
+            color: #4CAF50;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .partner-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .partner-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .partner-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 8px;
+        }
+
+        .partner-info {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .partner-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .stars {
+            color: #FFC107;
+            font-size: 14px;
+        }
+
+        .rating-text {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .partner-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .partner-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+
+        .price-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .price-table th {
+            background: #f8f9fa;
+            padding: 12px 8px;
+            text-align: left;
+            font-size: 13px;
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .price-table td {
+            padding: 12px 8px;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .price-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .highlight-price {
+            color: #2196F3;
+            font-weight: 700;
+        }
+
+        .info-box {
+            background: #fff3e0;
+            border-left: 4px solid #FF9800;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #FF9800;
+            margin-bottom: 8px;
+        }
+
+        .info-box-text {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .contact-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+
+        .contact-icon {
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            background: #e3f2fd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-content {
+            flex: 1;
+        }
+
+        .contact-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .contact-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .apply-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <div class="header-title">包租代管服務</div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>🏠</span>
+            租重點
+        </div>
+        <ul class="sidebar-menu">
+            <li><span class="menu-icon">🏠</span>租屋列表</li>
+            <li><span class="menu-icon">🏡</span>我的租屋</li>
+            <li><span class="menu-icon">☁️</span>上傳租屋</li>
+            <li><span class="menu-icon">📧</span>預約列表</li>
+            <li><span class="menu-icon">👥</span>會員列表</li>
+            <li><span class="menu-icon">👤</span>會員中心</li>
+            <li><span class="menu-icon">🏢</span>加入公司</li>
+            <li><span class="menu-icon">📞</span>聯絡客服</li>
+            <li><span class="menu-icon">🚪</span>登出</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="hero-section">
+            <div class="hero-icon">🏢</div>
+            <div class="hero-title">專業包租代管服務</div>
+            <div class="hero-subtitle">讓您的房產投資更輕鬆，專業團隊為您打理一切</div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">💡 什麼是包租代管？</div>
+            <div class="info-box-text">
+                包租代管是由專業公司代為管理您的房產，從招租、簽約、收租到物業維護，讓房東無後顧之憂，穩定收租、省時省力！
+            </div>
+        </div>
+
+        <div class="service-section">
+            <div class="section-title">
+                <span>🎯</span>
+                服務項目
+            </div>
+            <div class="service-grid">
+                <div class="service-card">
+                    <div class="service-icon">🔍</div>
+                    <div class="service-name">租客篩選</div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📝</div>
+                    <div class="service-name">合約簽署</div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">💰</div>
+                    <div class="service-name">租金代收</div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🔧</div>
+                    <div class="service-name">維修管理</div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📊</div>
+                    <div class="service-name">財務報表</div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🛡️</div>
+                    <div class="service-name">法律諮詢</div>
+                </div>
+            </div>
+
+            <ul class="feature-list">
+                <li>
+                    <span class="feature-icon">✓</span>
+                    <span>保證租金收入，空置期也照付</span>
+                </li>
+                <li>
+                    <span class="feature-icon">✓</span>
+                    <span>專業租客徵信，降低租金糾紛</span>
+                </li>
+                <li>
+                    <span class="feature-icon">✓</span>
+                    <span>定期房屋巡檢，維護房產價值</span>
+                </li>
+                <li>
+                    <span class="feature-icon">✓</span>
+                    <span>24小時客服支援，即時處理問題</span>
+                </li>
+                <li>
+                    <span class="feature-icon">✓</span>
+                    <span>稅務規劃建議，合法節稅</span>
+                </li>
+                <li>
+                    <span class="feature-icon">✓</span>
+                    <span>租約到期自動提醒與續約</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="price-section">
+            <div class="section-title">
+                <span>💵</span>
+                收費標準
+            </div>
+            <table class="price-table">
+                <thead>
+                    <tr>
+                        <th>服務類型</th>
+                        <th>收費方式</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>包租服務</td>
+                        <td class="highlight-price">月租金 10-15%</td>
+                    </tr>
+                    <tr>
+                        <td>代管服務</td>
+                        <td class="highlight-price">月租金 8-10%</td>
+                    </tr>
+                    <tr>
+                        <td>招租服務</td>
+                        <td class="highlight-price">半個月租金</td>
+                    </tr>
+                    <tr>
+                        <td>單次管理</td>
+                        <td class="highlight-price">依項目計價</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="partner-section">
+            <div class="section-title">
+                <span>🤝</span>
+                合作夥伴
+            </div>
+
+            <div class="partner-card">
+                <div class="partner-name">永安不動產管理顧問</div>
+                <div class="partner-rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-text">4.8 分 (236 則評價)</span>
+                </div>
+                <div class="partner-info">
+                    📍 服務區域：台北市、新北市<br>
+                    📞 聯絡電話：02-2345-6789<br>
+                    💼 管理物件：超過 500 件<br>
+                    ⏰ 成立時間：2015 年
+                </div>
+                <button class="partner-btn" onclick="contactPartner('永安不動產管理顧問')">聯絡洽詢</button>
+            </div>
+
+            <div class="partner-card">
+                <div class="partner-name">信賴包租代管公司</div>
+                <div class="partner-rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-text">4.9 分 (189 則評價)</span>
+                </div>
+                <div class="partner-info">
+                    📍 服務區域：桃園市、新竹縣市<br>
+                    📞 聯絡電話：03-1234-5678<br>
+                    💼 管理物件：超過 380 件<br>
+                    ⏰ 成立時間：2017 年
+                </div>
+                <button class="partner-btn" onclick="contactPartner('信賴包租代管公司')">聯絡洽詢</button>
+            </div>
+
+            <div class="partner-card">
+                <div class="partner-name">好家在物業管理</div>
+                <div class="partner-rating">
+                    <span class="stars">★★★★☆</span>
+                    <span class="rating-text">4.7 分 (312 則評價)</span>
+                </div>
+                <div class="partner-info">
+                    📍 服務區域：台中市、彰化縣<br>
+                    📞 聯絡電話：04-2345-6789<br>
+                    💼 管理物件：超過 650 件<br>
+                    ⏰ 成立時間：2013 年
+                </div>
+                <button class="partner-btn" onclick="contactPartner('好家在物業管理')">聯絡洽詢</button>
+            </div>
+
+            <div class="partner-card">
+                <div class="partner-name">安心租屋代管中心</div>
+                <div class="partner-rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-text">4.8 分 (275 則評價)</span>
+                </div>
+                <div class="partner-info">
+                    📍 服務區域：台南市、高雄市<br>
+                    📞 聯絡電話：07-3456-7890<br>
+                    💼 管理物件：超過 420 件<br>
+                    ⏰ 成立時間：2016 年
+                </div>
+                <button class="partner-btn" onclick="contactPartner('安心租屋代管中心')">聯絡洽詢</button>
+            </div>
+
+            <div class="partner-card">
+                <div class="partner-name">優質房產管理公司</div>
+                <div class="partner-rating">
+                    <span class="stars">★★★★☆</span>
+                    <span class="rating-text">4.6 分 (198 則評價)</span>
+                </div>
+                <div class="partner-info">
+                    📍 服務區域：全台服務<br>
+                    📞 聯絡電話：0800-123-456<br>
+                    💼 管理物件：超過 800 件<br>
+                    ⏰ 成立時間：2012 年
+                </div>
+                <button class="partner-btn" onclick="contactPartner('優質房產管理公司')">聯絡洽詢</button>
+            </div>
+        </div>
+
+        <div class="contact-section">
+            <div class="section-title">
+                <span>📞</span>
+                聯絡我們
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">📱</div>
+                <div class="contact-content">
+                    <div class="contact-label">客服專線</div>
+                    <div class="contact-value">0800-888-999</div>
+                </div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">✉️</div>
+                <div class="contact-content">
+                    <div class="contact-label">電子郵件</div>
+                    <div class="contact-value">service@rent-focus.com</div>
+                </div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">💬</div>
+                <div class="contact-content">
+                    <div class="contact-label">LINE 官方帳號</div>
+                    <div class="contact-value">@rentfocus</div>
+                </div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">⏰</div>
+                <div class="contact-content">
+                    <div class="contact-label">服務時間</div>
+                    <div class="contact-value">週一至週五 09:00-18:00</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="apply-btn" onclick="applyService()">
+            立即申請包租代管服務
+        </button>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function contactPartner(name) {
+            alert('正在為您轉接 ' + name + ' 的服務專員...\n\n請稍候，我們將透過電話與您聯繫。');
+        }
+
+        function applyService() {
+            alert('感謝您的申請！\n\n我們的專員將於 24 小時內與您聯繫，\n為您提供專業的包租代管諮詢服務。\n\n您也可以直接撥打客服專線：0800-888-999');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 智能媒合系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: #1a1a2e;
+            transition: left 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            padding: 20px;
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 20px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        .menu-icon {
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+
+        .intro-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .intro-subtitle {
+            font-size: 14px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .form-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #2196F3;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+
+        .price-range {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .price-separator {
+            color: #999;
+            font-weight: 600;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .checkbox-item input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+
+        .line-import-btn {
+            width: 100%;
+            padding: 14px;
+            background: #00B900;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .line-import-btn:hover {
+            background: #00A300;
+            transform: translateY(-2px);
+        }
+
+        .result-section {
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-header {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 5px;
+        }
+
+        .result-count {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .match-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .match-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
+        }
+
+        .match-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .house-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #e0e6ed;
+        }
+
+        .house-content {
+            padding: 15px;
+        }
+
+        .house-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 8px;
+        }
+
+        .house-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+
+        .house-info {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .house-info div {
+            margin-bottom: 4px;
+        }
+
+        .match-score {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .match-score-text {
+            font-size: 14px;
+            color: #2196F3;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <div class="header-title">智能媒合系統</div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>🏠</span>
+            租重點
+        </div>
+        <ul class="sidebar-menu">
+            <li><span class="menu-icon">🏠</span>租屋列表</li>
+            <li><span class="menu-icon">🏡</span>我的租屋</li>
+            <li><span class="menu-icon">☁️</span>上傳租屋</li>
+            <li><span class="menu-icon">📧</span>預約列表</li>
+            <li><span class="menu-icon">👥</span>會員列表</li>
+            <li><span class="menu-icon">👤</span>會員中心</li>
+            <li><span class="menu-icon">🏢</span>加入公司</li>
+            <li><span class="menu-icon">📞</span>聯絡客服</li>
+            <li><span class="menu-icon">🚪</span>登出</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="intro-section">
+            <div class="intro-title">🎯 智能媒合系統</div>
+            <div class="intro-subtitle">填寫您的需求，我們會為您精準配對最適合的物件</div>
+        </div>
+
+        <div class="form-section" id="formSection">
+            <button class="line-import-btn" onclick="importFromLine()">
+                <span>📱</span>
+                從 LINE 匯入需求
+            </button>
+
+            <div class="form-title">
+                <span>✏️</span>
+                填寫租屋需求
+            </div>
+
+            <form id="matchingForm" onsubmit="handleSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label">期望地區</label>
+                    <select class="form-select" required>
+                        <option value="">請選擇地區</option>
+                        <option value="台北市">台北市</option>
+                        <option value="新北市">新北市</option>
+                        <option value="桃園市">桃園市</option>
+                        <option value="台中市">台中市</option>
+                        <option value="台南市">台南市</option>
+                        <option value="高雄市">高雄市</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">物件類型</label>
+                    <select class="form-select" required>
+                        <option value="">請選擇類型</option>
+                        <option value="整層住家">整層住家</option>
+                        <option value="獨立套房">獨立套房</option>
+                        <option value="分租套房">分租套房</option>
+                        <option value="雅房">雅房</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">租金預算（元/月）</label>
+                    <div class="price-range">
+                        <input type="number" class="form-input" placeholder="最低" value="10000">
+                        <span class="price-separator">～</span>
+                        <input type="number" class="form-input" placeholder="最高" value="30000">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">坪數需求</label>
+                    <div class="price-range">
+                        <input type="number" class="form-input" placeholder="最小坪數" value="10">
+                        <span class="price-separator">～</span>
+                        <input type="number" class="form-input" placeholder="最大坪數" value="20">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">必要設備</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" checked>
+                            <span>冷氣</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox">
+                            <span>洗衣機</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" checked>
+                            <span>冰箱</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox">
+                            <span>電視</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" checked>
+                            <span>熱水器</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox">
+                            <span>停車位</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">特殊需求（選填）</label>
+                    <input type="text" class="form-input" placeholder="例如：近捷運站、有電梯、可養寵物...">
+                </div>
+
+                <button type="submit" class="submit-btn">🔍 開始媒合</button>
+            </form>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="result-header">
+                <div class="result-title">🎉 媒合成功</div>
+                <div class="result-count">為您找到 5 個符合條件的優質物件</div>
+            </div>
+
+            <div class="match-card" onclick="showDetail(1)">
+                <div class="match-badge">95% 符合</div>
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Crect fill='%23e0e6ed' width='400' height='200'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%232196F3' text-anchor='middle' dy='.3em'%3E台北市大安區套房%3C/text%3E%3C/svg%3E" class="house-image" alt="房屋圖片">
+                <div class="house-content">
+                    <div class="house-title">捷運忠孝復興站旁-溫馨套房</div>
+                    <div class="house-price">NT$ 28,000 / 月</div>
+                    <div class="house-info">
+                        <div>📍 台北市大安區復興南路</div>
+                        <div>🏠 獨立套房 | 15 坪</div>
+                        <div>🚇 距捷運忠孝復興站步行 3 分鐘</div>
+                    </div>
+                    <div class="match-score">
+                        <div class="match-score-text">✓ 符合您的 8 項需求條件</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="match-card" onclick="showDetail(2)">
+                <div class="match-badge">92% 符合</div>
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Crect fill='%23e0e6ed' width='400' height='200'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%232196F3' text-anchor='middle' dy='.3em'%3E台北市中山區套房%3C/text%3E%3C/svg%3E" class="house-image" alt="房屋圖片">
+                <div class="house-content">
+                    <div class="house-title">南京復興站-高樓層採光佳</div>
+                    <div class="house-price">NT$ 25,000 / 月</div>
+                    <div class="house-info">
+                        <div>📍 台北市中山區南京東路</div>
+                        <div>🏠 獨立套房 | 12 坪</div>
+                        <div>🚇 距捷運南京復興站步行 5 分鐘</div>
+                    </div>
+                    <div class="match-score">
+                        <div class="match-score-text">✓ 符合您的 7 項需求條件</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="match-card" onclick="showDetail(3)">
+                <div class="match-badge">90% 符合</div>
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Crect fill='%23e0e6ed' width='400' height='200'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%232196F3' text-anchor='middle' dy='.3em'%3E新北市板橋區套房%3C/text%3E%3C/svg%3E" class="house-image" alt="房屋圖片">
+                <div class="house-content">
+                    <div class="house-title">板橋府中站-全新裝潢</div>
+                    <div class="house-price">NT$ 22,000 / 月</div>
+                    <div class="house-info">
+                        <div>📍 新北市板橋區府中路</div>
+                        <div>🏠 獨立套房 | 13 坪</div>
+                        <div>🚇 距捷運府中站步行 2 分鐘</div>
+                    </div>
+                    <div class="match-score">
+                        <div class="match-score-text">✓ 符合您的 7 項需求條件</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="match-card" onclick="showDetail(4)">
+                <div class="match-badge">88% 符合</div>
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Crect fill='%23e0e6ed' width='400' height='200'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%232196F3' text-anchor='middle' dy='.3em'%3E台北市信義區套房%3C/text%3E%3C/svg%3E" class="house-image" alt="房屋圖片">
+                <div class="house-content">
+                    <div class="house-title">市政府站-商圈旁便利生活</div>
+                    <div class="house-price">NT$ 29,000 / 月</div>
+                    <div class="house-info">
+                        <div>📍 台北市信義區松仁路</div>
+                        <div>🏠 獨立套房 | 14 坪</div>
+                        <div>🚇 距捷運市政府站步行 4 分鐘</div>
+                    </div>
+                    <div class="match-score">
+                        <div class="match-score-text">✓ 符合您的 7 項需求條件</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="match-card" onclick="showDetail(5)">
+                <div class="match-badge">85% 符合</div>
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Crect fill='%23e0e6ed' width='400' height='200'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%232196F3' text-anchor='middle' dy='.3em'%3E台北市松山區套房%3C/text%3E%3C/svg%3E" class="house-image" alt="房屋圖片">
+                <div class="house-content">
+                    <div class="house-title">南京三民站-安靜社區</div>
+                    <div class="house-price">NT$ 24,000 / 月</div>
+                    <div class="house-info">
+                        <div>📍 台北市松山區南京東路</div>
+                        <div>🏠 獨立套房 | 13 坪</div>
+                        <div>🚇 距捷運南京三民站步行 6 分鐘</div>
+                    </div>
+                    <div class="match-score">
+                        <div class="match-score-text">✓ 符合您的 6 項需求條件</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function importFromLine() {
+            alert('正在從 LINE 匯入您的租屋需求...');
+            setTimeout(() => {
+                alert('匯入成功！已自動填入表單');
+            }, 500);
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+
+            // 隱藏表單，顯示結果
+            document.getElementById('formSection').style.display = 'none';
+            document.getElementById('resultSection').classList.add('show');
+
+            // 滾動到頂部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showDetail(id) {
+            alert('正在開啟物件 #' + id + ' 的詳細資料...');
+            // 實際應用中會跳轉到 HouseDetail 頁面
+        }
+    </script>
+</body>
+</html>
