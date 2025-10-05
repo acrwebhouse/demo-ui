@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 房源詳情</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            margin-top: 56px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .image-slider {
+            width: 100%;
+            height: 280px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slider-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .dot.active {
+            background: white;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .info-section {
+            background: white;
+            padding: 20px 15px;
+            margin-bottom: 10px;
+        }
+
+        .house-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .price {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2196F3;
+        }
+
+        .price-unit {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            background: #e3f2fd;
+            color: #2196F3;
+            font-weight: 500;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .equipment-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .equipment-icon {
+            font-size: 28px;
+        }
+
+        .equipment-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 15px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #2196F3;
+            border: 2px solid #2196F3;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .status-available {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .status-rented {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .owner-badge {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn">←</button>
+        <div class="header-title">房源詳情</div>
+    </div>
+
+    <div class="container">
+        <div class="image-slider">
+            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800" alt="房源照片" class="slider-image">
+            <div class="slider-dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="owner-badge">👤 您是此房源負責人</div>
+            <div class="status-badge status-available">📍 可出租</div>
+
+            <div class="house-title">捷運南勢角站-烘爐地-中和區忠孝街</div>
+
+            <div class="price-row">
+                <span class="price">23,500</span>
+                <span class="price-unit">元/月</span>
+            </div>
+
+            <div class="tags">
+                <span class="tag">整層住家</span>
+                <span class="tag">3房2廳</span>
+                <span class="tag">25坪</span>
+                <span class="tag">電梯大樓</span>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">城市區域</div>
+                    <div class="info-value">新北市 中和區</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">樓層</div>
+                    <div class="info-value">5樓/共12樓</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">坪數</div>
+                    <div class="info-value">25坪</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">房型</div>
+                    <div class="info-value">3房2廳2衛</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">押金</div>
+                    <div class="info-value">2個月</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">最短租期</div>
+                    <div class="info-value">1年</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-title">
+                <span>📝</span>
+                房源描述
+            </div>
+            <div class="description">位於捷運南勢角站步行5分鐘，生活機能便利。
+房間採光良好，通風佳。
+近烘爐地登山步道，假日可登山健行。
+附近有全聯、家樂福、傳統市場。
+公車站牌就在樓下，交通便利。</div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-title">
+                <span>🛋️</span>
+                房屋設備
+            </div>
+            <div class="equipment-grid">
+                <div class="equipment-item">
+                    <div class="equipment-icon">❄️</div>
+                    <div class="equipment-label">冷氣</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="equipment-icon">🛏️</div>
+                    <div class="equipment-label">床</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="equipment-icon">🚿</div>
+                    <div class="equipment-label">熱水器</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="equipment-icon">📺</div>
+                    <div class="equipment-label">電視</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="equipment-icon">🍳</div>
+                    <div class="equipment-label">瓦斯爐</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="equipment-icon">🌐</div>
+                    <div class="equipment-label">網路</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="equipment-icon">🧺</div>
+                    <div class="equipment-label">洗衣機</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="equipment-icon">❄️</div>
+                    <div class="equipment-label">冰箱</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="equipment-icon">🚗</div>
+                    <div class="equipment-label">車位</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-title">
+                <span>📍</span>
+                交通資訊
+            </div>
+            <div class="description">• 捷運南勢角站 - 步行5分鐘
+• 中和國中公車站 - 步行2分鐘
+• 景平路商圈 - 步行8分鐘</div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-title">
+                <span>🏫</span>
+                周邊生活機能
+            </div>
+            <div class="description">• 全聯福利中心 - 步行3分鐘
+• 家樂福中和店 - 步行10分鐘
+• 興南夜市 - 步行12分鐘
+• 中和國小 - 步行5分鐘
+• 中和國中 - 步行7分鐘</div>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn btn-secondary">下架房源</button>
+        <button class="btn btn-primary">編輯房源</button>
+    </div>
+</body>
+</html>

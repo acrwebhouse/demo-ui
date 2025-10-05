@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 個人資料</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ddd, transparent);
+        }
+
+        .divider::before {
+            left: 0;
+        }
+
+        .divider::after {
+            right: 0;
+        }
+
+        .divider-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2196F3;
+            padding: 0 15px;
+            background: #f5f7fa;
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .role-checkboxes {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .info-content {
+            display: inline-block;
+            text-align: left;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        .info-label {
+            color: #666;
+            display: inline-block;
+            min-width: 90px;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .gender-group {
+            display: inline-flex;
+            gap: 20px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .radio-label input {
+            cursor: pointer;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .sales-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .sales-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 12px;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .warning-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ff9800;
+            margin-bottom: 8px;
+        }
+
+        .warning-text {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .btn-reset {
+            margin-top: 10px;
+            padding: 6px 16px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .center-content {
+            text-align: center;
+        }
+
+        .input-group {
+            margin-top: 10px;
+        }
+
+        .hint-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn">☰</button>
+        <div class="header-title">個人資料</div>
+    </div>
+
+    <div class="container">
+        <div class="action-buttons">
+            <button class="btn btn-danger" onclick="deleteAccount()">註銷</button>
+            <button class="btn btn-primary" onclick="toggleEdit()">編輯</button>
+        </div>
+
+        <div class="divider">
+            <span class="divider-text">基本資料</span>
+        </div>
+
+        <div class="info-section">
+            <div class="role-checkboxes">
+                <label class="checkbox-label">
+                    <input type="checkbox" checked disabled>
+                    <span>屋主</span>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" checked disabled>
+                    <span>一般會員</span>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" checked disabled>
+                    <span>房仲</span>
+                </label>
+            </div>
+
+            <div class="center-content">
+                <div class="info-content" id="viewMode">
+                    <div class="info-item">
+                        <span class="info-label">帳號：</span>
+                        <span class="info-value">ming123</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">姓名：</span>
+                        <span class="info-value">張小明</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">密碼：</span>
+                        <span class="info-value">******</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">性別：</span>
+                        <div class="gender-group">
+                            <label class="radio-label">
+                                <input type="radio" name="gender" checked disabled>
+                                <span>男</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="gender" disabled>
+                                <span>女</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">生日：</span>
+                        <span class="info-value">1990/05/15</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">地址：</span>
+                        <span class="info-value">台北市大安區忠孝東路123號</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">信箱：</span>
+                        <span class="info-value">ming123@gmail.com</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">LineID：</span>
+                        <span class="info-value">ming123</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">電話：</span>
+                        <span class="info-value">0912-345-678</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">註冊時間：</span>
+                        <span class="info-value">2023/05/20 14:30:25</span>
+                    </div>
+                </div>
+
+                <div class="info-content" id="editMode" style="display: none;">
+                    <div class="info-item">
+                        <span class="info-label">帳號：</span>
+                        <span class="info-value">ming123</span>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">姓名：</div>
+                        <input type="text" class="form-input" value="張小明">
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">密碼：</div>
+                        <input type="password" class="form-input" value="******" disabled>
+                        <button class="btn-reset">重置密碼</button>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">性別：</span>
+                        <div class="gender-group">
+                            <label class="radio-label">
+                                <input type="radio" name="gender-edit" checked>
+                                <span>男</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="gender-edit">
+                                <span>女</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">生日：</div>
+                        <input type="date" class="form-input" value="1990-05-15">
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">地址：</div>
+                        <input type="text" class="form-input" value="台北市大安區忠孝東路123號">
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">信箱：</div>
+                        <span class="info-value">ming123@gmail.com</span>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">LineID：</div>
+                        <input type="text" class="form-input" value="ming123">
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">電話：</div>
+                        <input type="tel" class="form-input" value="0912345678" maxlength="10" placeholder="ex: 0912345678">
+                        <div class="hint-text">請輸入手機號碼（09開頭，10碼）</div>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">註冊時間：</span>
+                        <span class="info-value">2023/05/20 14:30:25</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider">
+            <span class="divider-text">房仲資料</span>
+        </div>
+
+        <div class="info-section">
+            <div class="center-content">
+                <div class="info-content" id="salesViewMode">
+                    <div class="info-item">
+                        <span class="info-label">營業員證號：</span>
+                        <span class="info-value">108台北市證12345號</span>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">經營地區：</div>
+                        <div class="info-value">台北市 - 大安區、信義區</div>
+                    </div>
+                </div>
+
+                <div class="info-content" id="salesEditMode" style="display: none;">
+                    <div class="info-item">
+                        <div class="info-label">營業員證號：</div>
+                        <input type="text" class="form-input" value="108台北市證12345號" maxlength="14" placeholder="例：108台北市證12345號">
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">經營地區：</div>
+                        <select class="form-select">
+                            <option>請選擇縣市</option>
+                            <option selected>台北市</option>
+                            <option>新北市</option>
+                            <option>桃園市</option>
+                            <option>台中市</option>
+                            <option>台南市</option>
+                            <option>高雄市</option>
+                        </select>
+                        <select class="form-select" style="margin-top: 10px;" multiple>
+                            <option selected>大安區</option>
+                            <option selected>信義區</option>
+                            <option>中正區</option>
+                            <option>中山區</option>
+                            <option>松山區</option>
+                        </select>
+                        <div class="hint-text">請選擇2個區域</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <div class="warning-title">⚠️ 帳戶安全提醒</div>
+            <div class="warning-text">
+                • 請妥善保管您的帳號密碼<br>
+                • 如需重置密碼，請點擊「重置密碼」按鈕<br>
+                • 註銷帳戶將刪除所有個人資料，且無法復原
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isEditMode = false;
+
+        function toggleEdit() {
+            isEditMode = !isEditMode;
+            const viewMode = document.getElementById('viewMode');
+            const editMode = document.getElementById('editMode');
+            const salesViewMode = document.getElementById('salesViewMode');
+            const salesEditMode = document.getElementById('salesEditMode');
+            const actionButtons = document.querySelector('.action-buttons');
+
+            if (isEditMode) {
+                viewMode.style.display = 'none';
+                editMode.style.display = 'block';
+                salesViewMode.style.display = 'none';
+                salesEditMode.style.display = 'block';
+                actionButtons.innerHTML = `
+                    <button class="btn btn-primary" onclick="saveEdit()">提交</button>
+                    <button class="btn btn-danger" onclick="toggleEdit()">取消</button>
+                `;
+            } else {
+                viewMode.style.display = 'block';
+                editMode.style.display = 'none';
+                salesViewMode.style.display = 'block';
+                salesEditMode.style.display = 'none';
+                actionButtons.innerHTML = `
+                    <button class="btn btn-danger" onclick="deleteAccount()">註銷</button>
+                    <button class="btn btn-primary" onclick="toggleEdit()">編輯</button>
+                `;
+            }
+        }
+
+        function saveEdit() {
+            alert('資料已儲存');
+            toggleEdit();
+        }
+
+        function deleteAccount() {
+            if (confirm('確定要註銷帳戶嗎？此操作無法復原！')) {
+                if (confirm('請再次確認是否要註銷帳戶？')) {
+                    alert('帳戶已註銷');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

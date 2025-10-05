@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 會員列表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .filter-input,
+        .filter-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .filter-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .member-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .member-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .member-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .member-info {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .info-line {
+            margin-bottom: 6px;
+        }
+
+        .info-label {
+            color: #999;
+            min-width: 80px;
+            display: inline-block;
+        }
+
+        .role-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 10px 0;
+        }
+
+        .role-tag {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tag-admin {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .tag-host {
+            background: #e3f2fd;
+            color: #2196F3;
+        }
+
+        .tag-user {
+            background: #f3e5f5;
+            color: #9c27b0;
+        }
+
+        .tag-sales {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .member-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-view {
+            background: #2196F3;
+            color: white;
+        }
+
+        .stats-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .stat-item {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2196F3;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .update-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn">☰</button>
+        <div class="header-title">會員列表</div>
+    </div>
+
+    <div class="container">
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value">156</div>
+                <div class="stat-label">總會員數</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">42</div>
+                <div class="stat-label">房仲</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">68</div>
+                <div class="stat-label">屋主</div>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-row">
+                <button class="filter-btn">搜尋</button>
+                <select class="filter-select">
+                    <option>排序：時間近到遠</option>
+                    <option>排序：時間遠到近</option>
+                </select>
+            </div>
+            <div class="filter-row">
+                <input type="text" class="filter-input" placeholder="搜尋人名">
+                <select class="filter-select">
+                    <option>角色不限</option>
+                    <option>admin</option>
+                    <option>host</option>
+                    <option>user</option>
+                    <option>sales</option>
+                </select>
+            </div>
+            <div class="filter-row">
+                <select class="filter-select">
+                    <option>縣市不限</option>
+                    <option>台北市</option>
+                    <option>新北市</option>
+                    <option>桃園市</option>
+                    <option>台中市</option>
+                    <option>台南市</option>
+                    <option>高雄市</option>
+                </select>
+                <select class="filter-select">
+                    <option>區域不限</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="memberList"></div>
+    </div>
+
+    <script>
+        const members = [
+            {
+                name: "張小明",
+                account: "ming123",
+                gender: "男",
+                phone: "0912-345-678",
+                bornDate: "1990/05/15",
+                roles: ["admin", "host", "sales"],
+                salesCity: "台北市",
+                salesArea: "大安區 信義區",
+                updateTime: "2025/09/10 14:30:25"
+            },
+            {
+                name: "李美麗",
+                account: "mary456",
+                gender: "女",
+                phone: "0923-456-789",
+                bornDate: "1988/08/22",
+                roles: ["host", "user"],
+                salesCity: "",
+                salesArea: "",
+                updateTime: "2025/09/08 10:15:42"
+            },
+            {
+                name: "王大偉",
+                account: "david789",
+                gender: "男",
+                phone: "0934-567-890",
+                bornDate: "1992/03/10",
+                roles: ["sales"],
+                salesCity: "新北市",
+                salesArea: "板橋區 新莊區",
+                updateTime: "2025/09/05 16:20:15"
+            },
+            {
+                name: "陳小華",
+                account: "hua111",
+                gender: "女",
+                phone: "0945-678-901",
+                bornDate: "1995/11/28",
+                roles: ["user"],
+                salesCity: "",
+                salesArea: "",
+                updateTime: "2025/09/03 09:45:33"
+            },
+            {
+                name: "林志明",
+                account: "jimmy222",
+                gender: "男",
+                phone: "0956-789-012",
+                bornDate: "1987/07/05",
+                roles: ["host", "sales"],
+                salesCity: "台中市",
+                salesArea: "西屯區 南屯區",
+                updateTime: "2025/09/01 13:55:20"
+            },
+            {
+                name: "黃淑芬",
+                account: "susan333",
+                gender: "女",
+                phone: "0967-890-123",
+                bornDate: "1993/12/18",
+                roles: ["sales"],
+                salesCity: "高雄市",
+                salesArea: "三民區 鳳山區",
+                updateTime: "2025/08/28 11:30:45"
+            },
+            {
+                name: "周建國",
+                account: "john444",
+                gender: "男",
+                phone: "0978-901-234",
+                bornDate: "1989/04/03",
+                roles: ["host", "user"],
+                salesCity: "",
+                salesArea: "",
+                updateTime: "2025/08/25 15:20:10"
+            },
+            {
+                name: "吳佳玲",
+                account: "jia555",
+                gender: "女",
+                phone: "0989-012-345",
+                bornDate: "1991/09/30",
+                roles: ["sales"],
+                salesCity: "桃園市",
+                salesArea: "中壢區 平鎮區",
+                updateTime: "2025/08/20 08:40:55"
+            },
+            {
+                name: "鄭雅婷",
+                account: "ting666",
+                gender: "女",
+                phone: "0911-123-456",
+                bornDate: "1994/06/12",
+                roles: ["host"],
+                salesCity: "",
+                salesArea: "",
+                updateTime: "2025/08/15 17:25:30"
+            },
+            {
+                name: "蔡文傑",
+                account: "jack777",
+                gender: "男",
+                phone: "0922-234-567",
+                bornDate: "1986/01/25",
+                roles: ["user", "sales"],
+                salesCity: "台南市",
+                salesArea: "東區 北區",
+                updateTime: "2025/08/10 12:10:18"
+            }
+        ];
+
+        function getRoleTagClass(role) {
+            const roleMap = {
+                'admin': 'tag-admin',
+                'host': 'tag-host',
+                'user': 'tag-user',
+                'sales': 'tag-sales'
+            };
+            return roleMap[role] || '';
+        }
+
+        function renderMembers() {
+            const container = document.getElementById('memberList');
+            container.innerHTML = members.map((member, index) => `
+                <div class="member-card">
+                    <div class="member-header">
+                        <div class="member-name">${member.name}</div>
+                    </div>
+                    <div class="member-info">
+                        <div class="info-line">
+                            <span class="info-label">帳號：</span>${member.account}
+                        </div>
+                        <div class="info-line">
+                            <span class="info-label">電話：</span>${member.phone}
+                        </div>
+                        <div class="info-line">
+                            <span class="info-label">性別：</span>${member.gender}
+                        </div>
+                        <div class="info-line">
+                            <span class="info-label">生日：</span>${member.bornDate}
+                        </div>
+                        <div class="role-tags">
+                            ${member.roles.map(role => `
+                                <span class="role-tag ${getRoleTagClass(role)}">${role}</span>
+                            `).join('')}
+                        </div>
+                        ${member.salesCity ? `
+                        <div class="info-line">
+                            <span class="info-label">銷售城市：</span>${member.salesCity}
+                        </div>
+                        <div class="info-line">
+                            <span class="info-label">銷售區域：</span>${member.salesArea}
+                        </div>
+                        ` : ''}
+                        <div class="update-time">更新時間：${member.updateTime}</div>
+                    </div>
+                    <div class="member-actions">
+                        <button class="btn btn-delete" onclick="deleteMember('${member.account}')">刪除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteMember(account) {
+            if (confirm('確定要刪除此會員嗎？')) {
+                alert('已刪除會員：' + account);
+            }
+        }
+
+        renderMembers();
+    </script>
+</body>
+</html>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 預約管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stats-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 15px 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2196F3;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .filter-input,
+        .filter-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .filter-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .reserve-card {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reserve-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px rgba(33, 150, 243, 0.3);
+        }
+
+        .reserve-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .reserve-content {
+            padding: 15px;
+        }
+
+        .reserve-info {
+            margin-bottom: 15px;
+        }
+
+        .info-line {
+            font-size: 16px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .client-name {
+            color: #2196F3;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .client-phone {
+            color: #865432;
+            font-size: 18px;
+        }
+
+        .price {
+            color: #ff00ff;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+
+        .status-contact {
+            background: #e3f2fd;
+            color: #2196F3;
+        }
+
+        .status-completed {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .update-time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 10px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn">☰</button>
+        <div class="header-title">預約管理</div>
+    </div>
+
+    <div class="container">
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value">10</div>
+                <div class="stat-label">總預約</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">3</div>
+                <div class="stat-label">未接洽</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">4</div>
+                <div class="stat-label">接洽中</div>
+            </div>
+        </div>
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('host')">屋主預約</button>
+            <button class="tab-btn" onclick="switchTab('tenant')">我的預約</button>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-row">
+                <button class="filter-btn">搜尋</button>
+                <select class="filter-select">
+                    <option>排序：時間近到遠</option>
+                    <option>排序：時間遠到近</option>
+                    <option>排序：接洽狀態</option>
+                </select>
+            </div>
+            <div class="filter-row">
+                <select class="filter-select">
+                    <option value="">選擇狀態</option>
+                    <option>未接洽</option>
+                    <option>接洽中</option>
+                    <option>完成看房</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="reserveList"></div>
+    </div>
+
+    <script>
+        const reserveData = [
+            {
+                id: 1,
+                clientName: "王小明",
+                clientPhone: "0912-345-678",
+                price: 23500,
+                houseImage: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600",
+                status: 0,
+                updateTime: "2025/09/28"
+            },
+            {
+                id: 2,
+                clientName: "李美麗",
+                clientPhone: "0923-456-789",
+                price: 18000,
+                houseImage: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600",
+                status: 1,
+                updateTime: "2025/09/27"
+            },
+            {
+                id: 3,
+                clientName: "張大偉",
+                clientPhone: "0934-567-890",
+                price: 25000,
+                houseImage: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600",
+                status: 2,
+                updateTime: "2025/09/26"
+            },
+            {
+                id: 4,
+                clientName: "陳小華",
+                clientPhone: "0945-678-901",
+                price: 16000,
+                houseImage: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600",
+                status: 0,
+                updateTime: "2025/09/25"
+            },
+            {
+                id: 5,
+                clientName: "林志明",
+                clientPhone: "0956-789-012",
+                price: 22000,
+                houseImage: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600",
+                status: 1,
+                updateTime: "2025/09/24"
+            },
+            {
+                id: 6,
+                clientName: "黃淑芬",
+                clientPhone: "0967-890-123",
+                price: 19500,
+                houseImage: "https://images.unsplash.com/photo-1502672023488-70e25813eb80?w=600",
+                status: 0,
+                updateTime: "2025/09/23"
+            },
+            {
+                id: 7,
+                clientName: "周建國",
+                clientPhone: "0978-901-234",
+                price: 21000,
+                houseImage: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=600",
+                status: 2,
+                updateTime: "2025/09/22"
+            },
+            {
+                id: 8,
+                clientName: "吳佳玲",
+                clientPhone: "0989-012-345",
+                price: 17800,
+                houseImage: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?w=600",
+                status: 1,
+                updateTime: "2025/09/21"
+            },
+            {
+                id: 9,
+                clientName: "鄭雅婷",
+                clientPhone: "0911-123-456",
+                price: 24500,
+                houseImage: "https://images.unsplash.com/photo-1513584684374-8bab748fbf90?w=600",
+                status: 0,
+                updateTime: "2025/09/20"
+            },
+            {
+                id: 10,
+                clientName: "蔡文傑",
+                clientPhone: "0922-234-567",
+                price: 20000,
+                houseImage: "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=600",
+                status: 2,
+                updateTime: "2025/09/19"
+            }
+        ];
+
+        const statusText = ['未接洽', '接洽中', '完成看房'];
+        const statusClass = ['status-pending', 'status-contact', 'status-completed'];
+
+        function renderReserveList() {
+            const container = document.getElementById('reserveList');
+            container.innerHTML = reserveData.map(item => `
+                <div class="reserve-card" onclick="viewDetail(${item.id})">
+                    <img src="${item.houseImage}" alt="房源照片" class="reserve-image">
+                    <div class="reserve-content">
+                        <div class="reserve-info">
+                            <div class="info-line client-name">租客：${item.clientName}</div>
+                            <div class="info-line client-phone">租客電話：${item.clientPhone}</div>
+                            <div class="info-line price">價格：${item.price.toLocaleString()} 元</div>
+                        </div>
+                        <div class="action-buttons" onclick="event.stopPropagation()">
+                            <button class="btn btn-primary" onclick="viewDetail(${item.id})">查看</button>
+                            <button class="btn btn-danger" onclick="deleteReserve(${item.id})">刪除</button>
+                        </div>
+                        <div class="status-badge ${statusClass[item.status]}">${statusText[item.status]}</div>
+                        <div class="update-time">更新時間：${item.updateTime}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(tab) {
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tab === 'host') {
+                alert('切換到屋主預約列表');
+            } else {
+                alert('切換到我的預約列表');
+            }
+        }
+
+        function viewDetail(id) {
+            alert('查看預約詳情 ID: ' + id);
+        }
+
+        function deleteReserve(id) {
+            if (confirm('確定要刪除此預約嗎？')) {
+                alert('已刪除預約 ID: ' + id);
+            }
+        }
+
+        renderReserveList();
+    </script>
+</body>
+</html>

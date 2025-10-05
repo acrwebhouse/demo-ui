@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 選單</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: #1a1a2e;
+            transition: left 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            padding: 20px;
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 20px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        .sidebar-menu li.active {
+            background: #2196F3;
+            border-left: 4px solid #64B5F6;
+        }
+
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .submenu {
+            background: rgba(0,0,0,0.2);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .submenu.active {
+            max-height: 500px;
+        }
+
+        .submenu li {
+            padding-left: 50px;
+            font-size: 14px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 20px 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2196F3;
+            margin-bottom: 15px;
+        }
+
+        .welcome-text {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(33, 150, 243, 0.3);
+        }
+
+        .menu-card-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .menu-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .divider {
+            margin: 30px 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ddd, transparent);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <div class="header-title">租重點</div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>🏠</span>
+            租重點
+        </div>
+        <ul class="sidebar-menu">
+            <li class="active">
+                <span class="menu-icon">🏠</span>
+                租屋列表
+            </li>
+            <li>
+                <span class="menu-icon">🏡</span>
+                我的租屋
+            </li>
+            <li>
+                <span class="menu-icon">☁️</span>
+                上傳租屋
+            </li>
+            <li>
+                <span class="menu-icon">📧</span>
+                預約列表
+            </li>
+            <li>
+                <span class="menu-icon">👥</span>
+                會員列表
+            </li>
+            <li>
+                <span class="menu-icon">👤</span>
+                會員中心
+            </li>
+            <li>
+                <span class="menu-icon">📊</span>
+                資料採集
+            </li>
+            <li>
+                <span class="menu-icon">🔍</span>
+                加入公司
+            </li>
+            <li onclick="toggleSubmenu()">
+                <span class="menu-icon">🏢</span>
+                公司
+                <span style="margin-left: auto;">▼</span>
+            </li>
+            <ul class="submenu" id="submenu">
+                <li>
+                    <span class="menu-icon">🏢</span>
+                    公司簡介
+                </li>
+                <li>
+                    <span class="menu-icon">🏠</span>
+                    租屋列表
+                </li>
+                <li>
+                    <span class="menu-icon">📋</span>
+                    物件開發
+                </li>
+                <li>
+                    <span class="menu-icon">🔧</span>
+                    物件管理
+                </li>
+                <li>
+                    <span class="menu-icon">💰</span>
+                    成交紀錄
+                </li>
+                <li>
+                    <span class="menu-icon">✅</span>
+                    審核列表
+                </li>
+                <li>
+                    <span class="menu-icon">👥</span>
+                    員工列表
+                </li>
+                <li>
+                    <span class="menu-icon">👤</span>
+                    員工中心
+                </li>
+            </ul>
+            <li>
+                <span class="menu-icon">📞</span>
+                聯絡客服
+            </li>
+            <li>
+                <span class="menu-icon">🔑</span>
+                註冊 / 登入
+            </li>
+            <li>
+                <span class="menu-icon">🚪</span>
+                登出
+            </li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="welcome-card">
+            <div class="welcome-title">歡迎使用租重點</div>
+            <div class="welcome-text">
+                提供便利的租屋媒合服務<br>
+                讓找房、租房變得更簡單
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="menu-grid">
+            <div class="menu-card">
+                <div class="menu-card-icon">🏠</div>
+                <div class="menu-card-title">租屋列表</div>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🏡</div>
+                <div class="menu-card-title">我的租屋</div>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">☁️</div>
+                <div class="menu-card-title">上傳租屋</div>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">📧</div>
+                <div class="menu-card-title">預約列表</div>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">👥</div>
+                <div class="menu-card-title">會員列表</div>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">👤</div>
+                <div class="menu-card-title">會員中心</div>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🏢</div>
+                <div class="menu-card-title">公司管理</div>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">📞</div>
+                <div class="menu-card-title">聯絡客服</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function toggleSubmenu() {
+            event.stopPropagation();
+            const submenu = document.getElementById('submenu');
+            submenu.classList.toggle('active');
+        }
+
+        // 點擊選單項目
+        const menuItems = document.querySelectorAll('.sidebar-menu > li');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                menuItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

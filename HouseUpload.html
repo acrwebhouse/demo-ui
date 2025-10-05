@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 房源上架</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .form-label .required {
+            color: #f44336;
+            margin-left: 4px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .checkbox-label input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: #2196F3;
+            background: #f8f9fa;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .image-preview {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f0f0f0;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 15px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #666;
+            border: 2px solid #ddd;
+        }
+
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .equipment-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .equipment-item.selected {
+            background: #e3f2fd;
+            border-color: #2196F3;
+        }
+
+        .equipment-icon {
+            font-size: 28px;
+        }
+
+        .equipment-label {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        .hint-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn">←</button>
+        <div class="header-title">房源上架</div>
+    </div>
+
+    <div class="container">
+        <div class="form-section">
+            <div class="section-title">
+                <span>📝</span>
+                基本資料
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">房源標題<span class="required">*</span></label>
+                <input type="text" class="form-input" placeholder="例：捷運南勢角站-烘爐地-中和區忠孝街" value="捷運南勢角站-烘爐地-中和區忠孝街">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">租屋類型<span class="required">*</span></label>
+                <select class="form-select">
+                    <option value="">請選擇</option>
+                    <option value="整層住家" selected>整層住家</option>
+                    <option value="獨立套房">獨立套房</option>
+                    <option value="分租套房">分租套房</option>
+                    <option value="雅房">雅房</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">建物類型<span class="required">*</span></label>
+                <select class="form-select">
+                    <option value="">請選擇</option>
+                    <option value="公寓">公寓</option>
+                    <option value="電梯大樓" selected>電梯大樓</option>
+                    <option value="透天">透天</option>
+                    <option value="辦公室">辦公室</option>
+                    <option value="店面">店面</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">縣市<span class="required">*</span></label>
+                    <select class="form-select">
+                        <option value="">請選擇</option>
+                        <option value="台北市">台北市</option>
+                        <option value="新北市" selected>新北市</option>
+                        <option value="桃園市">桃園市</option>
+                        <option value="台中市">台中市</option>
+                        <option value="台南市">台南市</option>
+                        <option value="高雄市">高雄市</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">區域<span class="required">*</span></label>
+                    <select class="form-select">
+                        <option value="">請選擇</option>
+                        <option value="中和區" selected>中和區</option>
+                        <option value="永和區">永和區</option>
+                        <option value="板橋區">板橋區</option>
+                        <option value="新莊區">新莊區</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">詳細地址<span class="required">*</span></label>
+                <input type="text" class="form-input" placeholder="例：忠孝街123號" value="忠孝街123號">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">樓層<span class="required">*</span></label>
+                    <select class="form-select">
+                        <option value="">請選擇</option>
+                        <option value="1樓">1樓</option>
+                        <option value="2樓">2樓</option>
+                        <option value="3樓">3樓</option>
+                        <option value="4樓">4樓</option>
+                        <option value="5樓" selected>5樓</option>
+                        <option value="6樓">6樓</option>
+                        <option value="7樓">7樓</option>
+                        <option value="8樓">8樓</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">總樓層<span class="required">*</span></label>
+                    <select class="form-select">
+                        <option value="">請選擇</option>
+                        <option value="8樓">8樓</option>
+                        <option value="10樓">10樓</option>
+                        <option value="12樓" selected>12樓</option>
+                        <option value="15樓">15樓</option>
+                        <option value="20樓">20樓</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">房<span class="required">*</span></label>
+                    <input type="number" class="form-input" placeholder="0" value="3">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">廳<span class="required">*</span></label>
+                    <input type="number" class="form-input" placeholder="0" value="2">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">衛<span class="required">*</span></label>
+                    <input type="number" class="form-input" placeholder="0" value="2">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">坪數<span class="required">*</span></label>
+                    <input type="number" class="form-input" placeholder="0" value="25">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="section-title">
+                <span>💰</span>
+                租金資訊
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">月租金<span class="required">*</span></label>
+                <input type="number" class="form-input" placeholder="請輸入月租金" value="23500">
+                <div class="hint-text">建議參考周邊行情設定合理租金</div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">押金（月數）<span class="required">*</span></label>
+                    <select class="form-select">
+                        <option value="">請選擇</option>
+                        <option value="1">1個月</option>
+                        <option value="2" selected>2個月</option>
+                        <option value="3">3個月</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">最短租期<span class="required">*</span></label>
+                    <select class="form-select">
+                        <option value="">請選擇</option>
+                        <option value="半年">半年</option>
+                        <option value="1年" selected>1年</option>
+                        <option value="2年">2年</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">其他費用</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" checked>
+                        管理費
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox">
+                        停車費
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox">
+                        網路費
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox">
+                        第四台
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="section-title">
+                <span>🛋️</span>
+                房屋設備
+            </div>
+
+            <div class="equipment-grid">
+                <div class="equipment-item selected">
+                    <div class="equipment-icon">❄️</div>
+                    <div class="equipment-label">冷氣</div>
+                </div>
+                <div class="equipment-item selected">
+                    <div class="equipment-icon">🛏️</div>
+                    <div class="equipment-label">床</div>
+                </div>
+                <div class="equipment-item selected">
+                    <div class="equipment-icon">🚿</div>
+                    <div class="equipment-label">熱水器</div>
+                </div>
+                <div class="equipment-item selected">
+                    <div class="equipment-icon">📺</div>
+                    <div class="equipment-label">電視</div>
+                </div>
+                <div class="equipment-item selected">
+                    <div class="equipment-icon">🍳</div>
+                    <div class="equipment-label">瓦斯爐</div>
+                </div>
+                <div class="equipment-item selected">
+                    <div class="equipment-icon">🌐</div>
+                    <div class="equipment-label">網路</div>
+                </div>
+                <div class="equipment-item selected">
+                    <div class="equipment-icon">🧺</div>
+                    <div class="equipment-label">洗衣機</div>
+                </div>
+                <div class="equipment-item selected">
+                    <div class="equipment-icon">❄️</div>
+                    <div class="equipment-label">冰箱</div>
+                </div>
+                <div class="equipment-item selected">
+                    <div class="equipment-icon">🚗</div>
+                    <div class="equipment-label">車位</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="equipment-icon">🛋️</div>
+                    <div class="equipment-label">沙發</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="equipment-icon">🪑</div>
+                    <div class="equipment-label">桌椅</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="equipment-icon">🚪</div>
+                    <div class="equipment-label">衣櫃</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="section-title">
+                <span>📷</span>
+                房源照片
+            </div>
+
+            <div class="upload-area">
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">點擊上傳照片（最多10張）</div>
+            </div>
+
+            <div class="image-preview-grid">
+                <div class="image-preview">
+                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400" alt="房源照片">
+                    <button class="remove-image">×</button>
+                </div>
+                <div class="image-preview">
+                    <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400" alt="房源照片">
+                    <button class="remove-image">×</button>
+                </div>
+                <div class="image-preview">
+                    <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400" alt="房源照片">
+                    <button class="remove-image">×</button>
+                </div>
+                <div class="image-preview">
+                    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400" alt="房源照片">
+                    <button class="remove-image">×</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="section-title">
+                <span>📝</span>
+                房源描述
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">詳細說明</label>
+                <textarea class="form-textarea" placeholder="請詳細描述房源特色、周邊環境、交通資訊等">位於捷運南勢角站步行5分鐘，生活機能便利。
+房間採光良好，通風佳。
+近烘爐地登山步道，假日可登山健行。
+附近有全聯、家樂福、傳統市場。
+公車站牌就在樓下，交通便利。</textarea>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="section-title">
+                <span>🚇</span>
+                交通資訊
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">附近交通站點</label>
+                <textarea class="form-textarea" placeholder="例：捷運南勢角站 - 步行5分鐘">捷運南勢角站 - 步行5分鐘
+中和國中公車站 - 步行2分鐘
+景平路商圈 - 步行8分鐘</textarea>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="section-title">
+                <span>🏫</span>
+                生活機能
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">周邊設施</label>
+                <textarea class="form-textarea" placeholder="例：全聯福利中心 - 步行3分鐘">全聯福利中心 - 步行3分鐘
+家樂福中和店 - 步行10分鐘
+興南夜市 - 步行12分鐘
+中和國小 - 步行5分鐘
+中和國中 - 步行7分鐘</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn btn-secondary">取消</button>
+        <button class="btn btn-primary">發布房源</button>
+    </div>
+
+    <script>
+        // 設備選擇功能
+        const equipmentItems = document.querySelectorAll('.equipment-item');
+        equipmentItems.forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('selected');
+            });
+        });
+
+        // 照片移除功能
+        const removeButtons = document.querySelectorAll('.remove-image');
+        removeButtons.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.parentElement.remove();
+            });
+        });
+    </script>
+</body>
+</html>
