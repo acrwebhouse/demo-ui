@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - AI 小幫手・點點</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-content {
+            flex: 1;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 480px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .message {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            display: flex;
+            flex-direction: column;
+            max-width: 80%;
+        }
+
+        .message.user .message-content {
+            align-items: flex-end;
+        }
+
+        .message.bot .message-content {
+            align-items: flex-start;
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 15px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .message.bot .message-bubble {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 1px 4px rgba(33, 150, 243, 0.3);
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .message.bot .message-time {
+            text-align: left;
+        }
+
+        .house-card-chat {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            width: 100%;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-top: 4px;
+        }
+
+        .house-image-chat {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #e0e6ed;
+        }
+
+        .house-card-content {
+            padding: 15px;
+        }
+
+        .house-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 8px;
+        }
+
+        .house-card-location {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .house-card-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+
+        .house-card-rating {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .house-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .feature-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            background: #e8f5e9;
+            color: #4CAF50;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .view-detail-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .view-detail-btn:active {
+            transform: scale(0.98);
+        }
+
+        .input-container {
+            background: white;
+            padding: 12px 15px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .message-input:focus {
+            border-color: #2196F3;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 18px;
+            max-width: fit-content;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        .typing-indicator.show {
+            display: flex;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                opacity: 0.3;
+                transform: translateY(0);
+            }
+            30% {
+                opacity: 1;
+                transform: translateY(-8px);
+            }
+        }
+
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 0 15px;
+        }
+
+        .quick-reply-btn {
+            padding: 8px 16px;
+            background: white;
+            color: #2196F3;
+            border: 1px solid #2196F3;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-reply-btn:hover {
+            background: #2196F3;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <div class="header-content">
+            <div class="header-title">AI 小幫手・點點</div>
+            <div class="header-subtitle">線上</div>
+        </div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <!-- 歡迎訊息 -->
+        <div class="message bot">
+            <div class="message-content">
+                <div class="message-bubble">
+                    嗨～我是 AI 小幫手 - 點點，很開心能為您服務～請問您想找什麼樣的租屋物件呢？比方說地點，價格，大小，交通等資訊，我可以向你做推薦
+                </div>
+                <div class="message-time">9:41</div>
+            </div>
+        </div>
+
+        <!-- 使用者訊息 1 -->
+        <div class="message user">
+            <div class="message-content">
+                <div class="message-bubble">
+                    你好，我想找台北市的租屋，價格在一個月 12000以下的
+                </div>
+                <div class="message-time">9:42</div>
+            </div>
+        </div>
+
+        <!-- AI 回應 1 -->
+        <div class="message bot">
+            <div class="message-content">
+                <div class="message-bubble">
+                    收到！～我找到幾間不錯的屋子，你看看行不行
+                </div>
+                <div class="message-time">9:42</div>
+            </div>
+        </div>
+
+        <!-- 房屋卡片 1 -->
+        <div class="message bot">
+            <div class="message-content">
+                <div class="house-card-chat">
+                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600" class="house-image-chat" alt="溫馨套房">
+                    <div class="house-card-content">
+                        <div class="house-card-title">溫馨套房</div>
+                        <div class="house-card-price">NT$ 10,000 / 月</div>
+                        <div class="house-card-location">📍 台北市大安區復興南路</div>
+                        <div class="house-card-rating">🏠 獨立套房 | 8 坪</div>
+                        <div class="house-features">
+                            <span class="feature-tag">✓ 獨立衛浴</span>
+                            <span class="feature-tag">✓ 冷氣</span>
+                            <span class="feature-tag">✓ 近捷運</span>
+                        </div>
+                        <button class="view-detail-btn" onclick="viewDetail('溫馨套房')">查看詳細</button>
+                    </div>
+                </div>
+                <div class="message-time">9:42</div>
+            </div>
+        </div>
+
+        <!-- 房屋卡片 2 -->
+        <div class="message bot">
+            <div class="message-content">
+                <div class="house-card-chat">
+                    <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600" class="house-image-chat" alt="舒適雅房">
+                    <div class="house-card-content">
+                        <div class="house-card-title">舒適雅房</div>
+                        <div class="house-card-price">NT$ 11,500 / 月</div>
+                        <div class="house-card-location">📍 台北市中山區民生東路</div>
+                        <div class="house-card-rating">🏠 分租套房 | 6 坪</div>
+                        <div class="house-features">
+                            <span class="feature-tag">✓ 共用衛浴</span>
+                            <span class="feature-tag">✓ 熱水器</span>
+                            <span class="feature-tag">✓ WiFi</span>
+                        </div>
+                        <button class="view-detail-btn" onclick="viewDetail('舒適雅房')">查看詳細</button>
+                    </div>
+                </div>
+                <div class="message-time">9:43</div>
+            </div>
+        </div>
+
+        <!-- 使用者訊息 2 -->
+        <div class="message user">
+            <div class="message-content">
+                <div class="message-bubble">
+                    恩...我覺得雖然可以，但是我需要附近有便利商店
+                </div>
+                <div class="message-time">9:44</div>
+            </div>
+        </div>
+
+        <!-- AI 回應 2 -->
+        <div class="message bot">
+            <div class="message-content">
+                <div class="message-bubble">
+                    沒問題～我來幫你找靠近便利商店的租屋物件
+                </div>
+                <div class="message-time">9:44</div>
+            </div>
+        </div>
+
+        <!-- 房屋卡片 3 -->
+        <div class="message bot">
+            <div class="message-content">
+                <div class="house-card-chat">
+                    <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600" class="house-image-chat" alt="便利生活套房">
+                    <div class="house-card-content">
+                        <div class="house-card-title">便利生活套房</div>
+                        <div class="house-card-price">NT$ 11,200 / 月</div>
+                        <div class="house-card-location">📍 台北市大安區敦化南路</div>
+                        <div class="house-card-rating">🏠 獨立套房 | 9 坪</div>
+                        <div class="house-features">
+                            <span class="feature-tag">✓ 獨立衛浴</span>
+                            <span class="feature-tag">✓ 冷氣</span>
+                            <span class="feature-tag">✓ 近便利商店 (30步)</span>
+                        </div>
+                        <button class="view-detail-btn" onclick="viewDetail('便利生活套房')">查看詳細</button>
+                    </div>
+                </div>
+                <div class="message-time">9:45</div>
+            </div>
+        </div>
+
+        <!-- 房屋卡片 4 -->
+        <div class="message bot">
+            <div class="message-content">
+                <div class="house-card-chat">
+                    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600" class="house-image-chat" alt="現代套房">
+                    <div class="house-card-content">
+                        <div class="house-card-title">現代套房</div>
+                        <div class="house-card-price">NT$ 11,900 / 月</div>
+                        <div class="house-card-location">📍 台北市中正區羅斯福路</div>
+                        <div class="house-card-rating">🏠 獨立套房 | 11 坪</div>
+                        <div class="house-features">
+                            <span class="feature-tag">✓ 獨立衛浴</span>
+                            <span class="feature-tag">✓ 陽台</span>
+                            <span class="feature-tag">✓ 近便利商店 (樓下)</span>
+                        </div>
+                        <button class="view-detail-btn" onclick="viewDetail('現代套房')">查看詳細</button>
+                    </div>
+                </div>
+                <div class="message-time">9:45</div>
+            </div>
+        </div>
+
+        <!-- 使用者訊息 3 -->
+        <div class="message user">
+            <div class="message-content">
+                <div class="message-bubble">
+                    這幾間可以，感謝！
+                </div>
+                <div class="message-time">9:46</div>
+            </div>
+        </div>
+
+        <!-- AI 回應 3 -->
+        <div class="message bot">
+            <div class="message-content">
+                <div class="message-bubble">
+                    很開心能為您服務！
+                </div>
+                <div class="message-time">9:46</div>
+            </div>
+        </div>
+
+        <!-- Typing indicator -->
+        <div class="message bot">
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 快速回覆 -->
+    <div class="quick-replies" id="quickReplies" style="display: none;">
+        <button class="quick-reply-btn" onclick="quickReply('我想找台北市的租屋')">台北市租屋</button>
+        <button class="quick-reply-btn" onclick="quickReply('預算 15000 以下')">預算 15000</button>
+        <button class="quick-reply-btn" onclick="quickReply('靠近捷運站')">靠近捷運</button>
+        <button class="quick-reply-btn" onclick="quickReply('有停車位')">有停車位</button>
+    </div>
+
+    <!-- 輸入區 -->
+    <div class="input-container">
+        <input type="text" class="message-input" id="messageInput" placeholder="輸入訊息..." onkeypress="handleKeyPress(event)">
+        <button class="send-btn" onclick="sendMessage()">
+            ↑
+        </button>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        function viewDetail(houseName) {
+            alert('正在開啟「' + houseName + '」的詳細資料...');
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('chatContainer');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function showTyping() {
+            document.getElementById('typingIndicator').classList.add('show');
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            document.getElementById('typingIndicator').classList.remove('show');
+        }
+
+        function addMessage(text, isUser = false) {
+            const chatContainer = document.getElementById('chatContainer');
+            const now = new Date();
+            const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + (isUser ? 'user' : 'bot');
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="message-bubble">${text}</div>
+                    <div class="message-time">${timeStr}</div>
+                </div>
+            `;
+
+            // 在 typing indicator 之前插入
+            const typingParent = document.getElementById('typingIndicator').parentElement;
+            chatContainer.insertBefore(messageDiv, typingParent);
+
+            scrollToBottom();
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (message === '') return;
+
+            // 顯示使用者訊息
+            addMessage(message, true);
+            input.value = '';
+
+            // 顯示打字中
+            showTyping();
+
+            // 模擬 AI 回應
+            setTimeout(() => {
+                hideTyping();
+                const responses = [
+                    '收到！讓我為您找找合適的物件～',
+                    '好的，我幫您查詢一下！',
+                    '明白了，稍等一下喔～',
+                    '我來為您推薦幾個不錯的選擇！',
+                    '了解！馬上為您搜尋符合條件的房源～'
+                ];
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addMessage(randomResponse);
+            }, 1500);
+        }
+
+        function quickReply(text) {
+            const input = document.getElementById('messageInput');
+            input.value = text;
+            sendMessage();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // 頁面載入後滾動到底部
+        window.onload = function() {
+            scrollToBottom();
+        };
+    </script>
+</body>
+</html>
