@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>租重點 - 流浪房仲智能推薦系統</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .notification-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            position: relative;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #f44336;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            padding: 15px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2196F3;
+            margin-bottom: 8px;
+        }
+
+        .welcome-subtitle {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2196F3;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .view-all {
+            color: #2196F3;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+
+        .recommendation-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .recommendation-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .recommendation-content {
+            padding: 15px;
+        }
+
+        .recommendation-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .recommendation-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .recommendation-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .recommendation-stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .recommendation-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .recommendation-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .progress-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .progress-percentage {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2196F3;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            transition: width 0.3s ease;
+        }
+
+        .progress-desc {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .task-list {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #2196F3;
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .task-checkbox.completed {
+            background: #2196F3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .task-reward {
+            color: #2196F3;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .insight-card {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+
+        .insight-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .insight-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .insight-text {
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn">☰</button>
+        <div class="header-title">流浪房仲智能推薦系統</div>
+        <button class="notification-btn">
+            🔔
+            <span class="notification-badge">5</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- 歡迎卡片 -->
+        <div class="welcome-card">
+            <div class="welcome-title">歡迎加入租重點 👋</div>
+            <div class="welcome-subtitle">
+                我們的AI系統正在為您量身打造推薦策略，讓您快速找到最適合的房源，開啟成功房仲之路！
+            </div>
+        </div>
+
+        <!-- 數據統計 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">1,247</div>
+                <div class="stat-label">平台房源總數</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">89%</div>
+                <div class="stat-label">推薦準確率</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">15天</div>
+                <div class="stat-label">平均成交時間</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">368</div>
+                <div class="stat-label">活躍房仲數</div>
+            </div>
+        </div>
+
+        <!-- AI學習進度 -->
+        <div class="progress-card">
+            <div class="progress-header">
+                <div class="progress-title">AI 個人化學習進度</div>
+                <div class="progress-percentage">65%</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 65%"></div>
+            </div>
+            <div class="progress-desc">
+                系統已分析您的 23 次瀏覽行為，預計 5 天後完成個人化模型建立
+            </div>
+        </div>
+
+        <!-- 推薦策略分布圖 -->
+        <div class="chart-card">
+            <div class="chart-title">當前推薦策略分布</div>
+            <div class="chart-container">
+                <canvas id="strategyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 新手任務 -->
+        <div class="section-header">
+            <div class="section-title">新手任務</div>
+            <a href="#" class="view-all">查看全部</a>
+        </div>
+        <div class="task-list">
+            <div class="task-item">
+                <div class="task-checkbox completed">✓</div>
+                <div class="task-text">完成基本資料填寫</div>
+                <div class="task-reward">+50 積分</div>
+            </div>
+            <div class="task-item">
+                <div class="task-checkbox completed">✓</div>
+                <div class="task-text">瀏覽 5 個不同區域房源</div>
+                <div class="task-reward">+100 積分</div>
+            </div>
+            <div class="task-item">
+                <div class="task-checkbox"></div>
+                <div class="task-text">收藏 3 個潛力物件</div>
+                <div class="task-reward">+80 積分</div>
+            </div>
+            <div class="task-item">
+                <div class="task-checkbox"></div>
+                <div class="task-text">使用進階搜尋功能</div>
+                <div class="task-reward">+60 積分</div>
+            </div>
+            <div class="task-item">
+                <div class="task-checkbox"></div>
+                <div class="task-text">完成首次帶看預約</div>
+                <div class="task-reward">+200 積分</div>
+            </div>
+        </div>
+
+        <!-- 市場趨勢洞察 -->
+        <div class="insight-card">
+            <div class="insight-icon">📈</div>
+            <div class="insight-title">本週市場洞察</div>
+            <div class="insight-text">
+                信義區兩房物件詢問度提升 32%，平均成交價上漲 5.8%。此價位屬於該區域前 20% 最優惠範圍，建議優先關注！
+            </div>
+        </div>
+
+        <!-- 成交趨勢圖 -->
+        <div class="chart-card">
+            <div class="chart-title">近 7 天平台成交趨勢</div>
+            <div class="chart-container">
+                <canvas id="transactionChart"></canvas>
+            </div>
+        </div>
+
+        <!-- AI 智能推薦房源 -->
+        <div class="section-header">
+            <div class="section-title">AI 為您推薦</div>
+            <a href="#" class="view-all">查看更多</a>
+        </div>
+
+        <div class="recommendation-card">
+            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600" alt="房源" class="recommendation-image">
+            <div class="recommendation-content">
+                <div class="recommendation-tag">🔥 熱門推薦 · 90% 匹配度</div>
+                <div class="recommendation-title">信義區溫馨兩房｜近捷運站</div>
+                <div class="recommendation-desc">
+                    根據您的偏好推薦：位於信義區精華地段，步行 3 分鐘到捷運，適合首購族。本月瀏覽量 +45%，建議儘快聯繫！
+                </div>
+                <div class="recommendation-stats">
+                    <div class="recommendation-stat">
+                        <span>📍</span>
+                        <span>信義區</span>
+                    </div>
+                    <div class="recommendation-stat">
+                        <span>🏠</span>
+                        <span>2房1廳</span>
+                    </div>
+                    <div class="recommendation-stat">
+                        <span>💰</span>
+                        <span>NT$ 980萬</span>
+                    </div>
+                </div>
+                <button class="recommendation-btn">查看詳情</button>
+            </div>
+        </div>
+
+        <div class="recommendation-card">
+            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600" alt="房源" class="recommendation-image">
+            <div class="recommendation-content">
+                <div class="recommendation-tag">⭐ 新上架 · 85% 匹配度</div>
+                <div class="recommendation-title">大安區質感套房｜全新裝潢</div>
+                <div class="recommendation-desc">
+                    相似背景房仲首選：新裝潢套房，鄰近辦公區，投資報酬率 4.2%。過去 30 天同類型房源平均 12 天成交。
+                </div>
+                <div class="recommendation-stats">
+                    <div class="recommendation-stat">
+                        <span>📍</span>
+                        <span>大安區</span>
+                    </div>
+                    <div class="recommendation-stat">
+                        <span>🏠</span>
+                        <span>套房</span>
+                    </div>
+                    <div class="recommendation-stat">
+                        <span>💰</span>
+                        <span>NT$ 680萬</span>
+                    </div>
+                </div>
+                <button class="recommendation-btn">查看詳情</button>
+            </div>
+        </div>
+
+        <div class="recommendation-card">
+            <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600" alt="房源" class="recommendation-image">
+            <div class="recommendation-content">
+                <div class="recommendation-tag">💎 優質物件 · 88% 匹配度</div>
+                <div class="recommendation-title">內湖科技園區三房｜潛力增值</div>
+                <div class="recommendation-desc">
+                    區域趨勢推薦：內湖科技園區發展快速，周邊生活機能完善。該區本季房價成長 7.3%，具增值潛力。
+                </div>
+                <div class="recommendation-stats">
+                    <div class="recommendation-stat">
+                        <span>📍</span>
+                        <span>內湖區</span>
+                    </div>
+                    <div class="recommendation-stat">
+                        <span>🏠</span>
+                        <span>3房2廳</span>
+                    </div>
+                    <div class="recommendation-stat">
+                        <span>💰</span>
+                        <span>NT$ 1,580萬</span>
+                    </div>
+                </div>
+                <button class="recommendation-btn">查看詳情</button>
+            </div>
+        </div>
+
+        <!-- 推薦演化時間表 -->
+        <div class="chart-card">
+            <div class="chart-title">個人化推薦演化歷程</div>
+            <div class="chart-container">
+                <canvas id="evolutionChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 成功案例分享 -->
+        <div class="section-header">
+            <div class="section-title">成功案例分享</div>
+        </div>
+        <div class="insight-card" style="background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);">
+            <div class="insight-icon">🎯</div>
+            <div class="insight-title">新手房仲 14 天成交首單</div>
+            <div class="insight-text">
+                相似背景的林先生透過我們的 AI 推薦系統，在加入平台後第 14 天成功售出信義區兩房物件，成交價 NT$ 950 萬。他說：「系統推薦的房源都很精準，省去大量篩選時間！」
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 推薦策略分布圓餅圖
+        const strategyCtx = document.getElementById('strategyChart').getContext('2d');
+        new Chart(strategyCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['熱門房源推薦', '基於檔案推薦', '相似房仲推薦'],
+                datasets: [{
+                    data: [40, 30, 30],
+                    backgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56'
+                    ],
+                    hoverBackgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 12
+                            },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    }
+                },
+                layout: {
+                    padding: 10
+                }
+            }
+        });
+
+        // 成交趨勢折線圖
+        const transactionCtx = document.getElementById('transactionChart').getContext('2d');
+        new Chart(transactionCtx, {
+            type: 'line',
+            data: {
+                labels: ['週一', '週二', '週三', '週四', '週五', '週六', '週日'],
+                datasets: [{
+                    label: '成交數量',
+                    data: [12, 19, 15, 25, 22, 30, 28],
+                    borderColor: '#9C27B0',
+                    backgroundColor: 'rgba(156, 39, 176, 0.2)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#9C27B0',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // 推薦演化折線圖
+        const evolutionCtx = document.getElementById('evolutionChart').getContext('2d');
+        new Chart(evolutionCtx, {
+            type: 'line',
+            data: {
+                labels: ['第1-3天', '第4-7天', '第2週', '第3-4週', '一個月後'],
+                datasets: [
+                    {
+                        label: '市場熱門',
+                        data: [80, 60, 40, 20, 10],
+                        borderColor: '#FF6384',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#FF6384',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        fill: true
+                    },
+                    {
+                        label: '個人化推薦',
+                        data: [0, 30, 50, 70, 80],
+                        borderColor: '#36A2EB',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#36A2EB',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        fill: true
+                    },
+                    {
+                        label: '探索性推薦',
+                        data: [20, 10, 10, 10, 10],
+                        borderColor: '#FFCE56',
+                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#FFCE56',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 10,
+                            font: {
+                                size: 10
+                            },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            },
+                            font: {
+                                size: 10
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
