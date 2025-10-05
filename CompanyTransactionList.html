@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 成交紀錄</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2196F3;
+        }
+
+        .stat-unit {
+            font-size: 14px;
+            color: #999;
+            margin-left: 4px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border: none;
+            background: white;
+            color: #666;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        .record-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .record-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+
+        .record-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+
+        .record-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            color: #999;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .record-prices {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .price-item {
+            text-align: center;
+        }
+
+        .price-label {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .price-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .price-original {
+            color: #999;
+        }
+
+        .price-deal {
+            color: #2196F3;
+        }
+
+        .price-commission {
+            color: #4caf50;
+        }
+
+        .record-agent {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 20px 0 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon {
+            font-style: normal;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .legend-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn">☰</button>
+        <div class="header-title">成交紀錄</div>
+    </div>
+
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">累計成交</div>
+                <div class="stat-value">12<span class="stat-unit">件</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">累計獎金</div>
+                <div class="stat-value">186K<span class="stat-unit">元</span></div>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-title">
+                <span class="icon">📊</span>
+                月度成交趨勢
+            </div>
+            <div class="chart-container">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-title">
+                <span class="icon">🥧</span>
+                成交類型分布
+            </div>
+            <div class="chart-container">
+                <canvas id="pieChart"></canvas>
+            </div>
+            <div class="legend-container" id="pieLegend"></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active">全部記錄</button>
+            <button class="tab">本月成交</button>
+        </div>
+
+        <div class="section-title">
+            <span class="icon">📋</span>
+            成交明細
+        </div>
+
+        <div id="recordsList"></div>
+    </div>
+
+    <script>
+        const records = [
+            {
+                id: 1,
+                houseName: "捷運南勢角站-烘爐地-中和區忠孝街",
+                city: "新北市",
+                area: "中和區",
+                originalPrice: 25000,
+                dealPrice: 23500,
+                commission: 18800,
+                transactionDate: "2025/09/10",
+                startDate: "2025/09/15",
+                endDate: "2026/09/14",
+                agent: "張小明",
+                status: "已完成",
+                houseType: "整層住家"
+            },
+            {
+                id: 2,
+                houseName: "捷運小巨蛋-三軍總醫院-松山區南京東路",
+                city: "台北市",
+                area: "松山區",
+                originalPrice: 16000,
+                dealPrice: 14500,
+                commission: 11600,
+                transactionDate: "2025/09/08",
+                startDate: "2025/09/12",
+                endDate: "2026/09/11",
+                agent: "李美麗",
+                status: "已完成",
+                houseType: "雅房"
+            },
+            {
+                id: 3,
+                houseName: "捷運忠孝復興-SOGO百貨-大安區敦化南路",
+                city: "台北市",
+                area: "大安區",
+                originalPrice: 24000,
+                dealPrice: 22000,
+                commission: 17600,
+                transactionDate: "2025/09/05",
+                startDate: "2025/09/10",
+                endDate: "2026/09/09",
+                agent: "王大偉",
+                status: "已完成",
+                houseType: "獨立套房"
+            },
+            {
+                id: 4,
+                houseName: "捷運台北車站-西門町-中正區漢口街",
+                city: "台北市",
+                area: "中正區",
+                originalPrice: 20000,
+                dealPrice: 18000,
+                commission: 14400,
+                transactionDate: "2025/09/03",
+                startDate: "2025/09/08",
+                endDate: "2026/09/07",
+                agent: "陳小華",
+                status: "已完成",
+                houseType: "獨立套房"
+            },
+            {
+                id: 5,
+                houseName: "捷運古亭站-師範大學-大安區和平東路",
+                city: "台北市",
+                area: "大安區",
+                originalPrice: 18000,
+                dealPrice: 16500,
+                commission: 13200,
+                transactionDate: "2025/08/28",
+                startDate: "2025/09/01",
+                endDate: "2026/08/31",
+                agent: "林志明",
+                status: "已完成",
+                houseType: "分租套房"
+            },
+            {
+                id: 6,
+                houseName: "捷運公館站-台灣大學-中正區羅斯福路",
+                city: "台北市",
+                area: "中正區",
+                originalPrice: 21000,
+                dealPrice: 19500,
+                commission: 15600,
+                transactionDate: "2025/08/25",
+                startDate: "2025/08/30",
+                endDate: "2026/08/29",
+                agent: "黃淑芬",
+                status: "已完成",
+                houseType: "整層住家"
+            },
+            {
+                id: 7,
+                houseName: "捷運板橋站-新北市政府-板橋區縣民大道",
+                city: "新北市",
+                area: "板橋區",
+                originalPrice: 23000,
+                dealPrice: 21000,
+                commission: 16800,
+                transactionDate: "2025/08/20",
+                startDate: "2025/08/25",
+                endDate: "2026/08/24",
+                agent: "周建國",
+                status: "已完成",
+                houseType: "整層住家"
+            },
+            {
+                id: 8,
+                houseName: "捷運永春站-101大樓-信義區松山路",
+                city: "台北市",
+                area: "信義區",
+                originalPrice: 27000,
+                dealPrice: 25000,
+                commission: 20000,
+                transactionDate: "2025/08/15",
+                startDate: "2025/08/20",
+                endDate: "2026/08/19",
+                agent: "吳佳玲",
+                status: "已完成",
+                houseType: "整層住家"
+            },
+            {
+                id: 9,
+                houseName: "捷運景美站-世新大學-文山區羅斯福路",
+                city: "台北市",
+                area: "文山區",
+                originalPrice: 15000,
+                dealPrice: 13800,
+                commission: 11040,
+                transactionDate: "2025/08/10",
+                startDate: "2025/08/15",
+                endDate: "2026/08/14",
+                agent: "鄭雅婷",
+                status: "已完成",
+                houseType: "獨立套房"
+            },
+            {
+                id: 10,
+                houseName: "捷運新店站-碧潭風景區-新店區北新路",
+                city: "新北市",
+                area: "新店區",
+                originalPrice: 19000,
+                dealPrice: 17500,
+                commission: 14000,
+                transactionDate: "2025/08/05",
+                startDate: "2025/08/10",
+                endDate: "2026/08/09",
+                agent: "蔡文傑",
+                status: "已完成",
+                houseType: "整層住家"
+            },
+            {
+                id: 11,
+                houseName: "捷運中山站-晴光市場-中山區中山北路",
+                city: "台北市",
+                area: "中山區",
+                originalPrice: 22000,
+                dealPrice: 20000,
+                commission: 16000,
+                transactionDate: "2025/08/01",
+                startDate: "2025/08/05",
+                endDate: "2026/08/04",
+                agent: "劉俊傑",
+                status: "已完成",
+                houseType: "整層住家"
+            },
+            {
+                id: 12,
+                houseName: "捷運東門站-永康商圈-大安區信義路",
+                city: "台北市",
+                area: "大安區",
+                originalPrice: 26000,
+                dealPrice: 24000,
+                commission: 19200,
+                transactionDate: "2025/07/28",
+                startDate: "2025/08/01",
+                endDate: "2026/07/31",
+                agent: "謝佩君",
+                status: "已完成",
+                houseType: "整層住家"
+            }
+        ];
+
+        function renderRecords() {
+            const container = document.getElementById('recordsList');
+            container.innerHTML = records.map(record => `
+                <div class="record-card">
+                    <div class="record-header">
+                        <div class="record-title">${record.houseName}</div>
+                        <div class="record-status ${record.status === '已完成' ? 'status-completed' : 'status-pending'}">
+                            ${record.status}
+                        </div>
+                    </div>
+                    <div class="record-info">
+                        <div class="info-item">
+                            <div class="info-label">城市區域</div>
+                            <div class="info-value">${record.city} ${record.area}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">成交日期</div>
+                            <div class="info-value">${record.transactionDate}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">起租日期</div>
+                            <div class="info-value">${record.startDate}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">結租日期</div>
+                            <div class="info-value">${record.endDate}</div>
+                        </div>
+                    </div>
+                    <div class="record-prices">
+                        <div class="price-item">
+                            <div class="price-label">原始價</div>
+                            <div class="price-value price-original">${record.originalPrice.toLocaleString()}</div>
+                        </div>
+                        <div class="price-item">
+                            <div class="price-label">成交價</div>
+                            <div class="price-value price-deal">${record.dealPrice.toLocaleString()}</div>
+                        </div>
+                        <div class="price-item">
+                            <div class="price-label">服務費</div>
+                            <div class="price-value price-commission">${record.commission.toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div class="record-agent">
+                        <span class="icon">👤</span> 負責房仲：${record.agent}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 折線圖 - 月度成交趨勢
+        const lineCtx = document.getElementById('lineChart').getContext('2d');
+        const lineChart = new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: ['7月', '8月', '9月'],
+                datasets: [{
+                    label: '月度獎金 (千元)',
+                    data: [52, 83, 51],
+                    borderColor: '#FF6B6B',
+                    backgroundColor: 'rgba(255, 107, 107, 0.15)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#FF6B6B',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 3,
+                    pointHoverRadius: 8,
+                    pointHoverBackgroundColor: '#FF4757',
+                    pointHoverBorderColor: '#fff',
+                    pointHoverBorderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: {
+                            size: 14
+                        },
+                        bodyFont: {
+                            size: 13
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + 'K';
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // 圓餅圖 - 成交類型分布
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        const pieChart = new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['整層住家', '獨立套房', '分租套房', '雅房'],
+                datasets: [{
+                    data: [7, 3, 1, 1],
+                    backgroundColor: [
+                        '#4ECDC4',
+                        '#FF6B6B',
+                        '#FFE66D',
+                        '#A8E6CF'
+                    ],
+                    borderWidth: 3,
+                    borderColor: '#fff',
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((context.parsed / total) * 100);
+                                return context.label + ': ' + context.parsed + ' 件 (' + percentage + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 自定義圖例
+        const legendHtml = pieChart.data.labels.map((label, index) => {
+            const color = pieChart.data.datasets[0].backgroundColor[index];
+            const value = pieChart.data.datasets[0].data[index];
+            return `
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: ${color}"></div>
+                    <span>${label} (${value}件)</span>
+                </div>
+            `;
+        }).join('');
+        document.getElementById('pieLegend').innerHTML = legendHtml;
+
+        renderRecords();
+    </script>
+</body>
+</html>
