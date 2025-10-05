@@ -3,4 +3,4 @@
   docker build -t demo-ui .
 
   # 執行容器
-  docker run -p 666:666 demo-ui
+  docker run -d -p 666:666 --restart always --name demo-ui demo-ui
