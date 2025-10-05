@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 物件管理</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: #1a1a2e;
+            transition: left 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            padding: 20px;
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 20px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        .menu-icon {
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .time-selector {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .time-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .time-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .time-range {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2196F3;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .chart-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .table-section {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            color: #666;
+            font-weight: 600;
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+            font-size: 13px;
+        }
+
+        td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .total-row {
+            background: #e3f2fd;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2196F3;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <div class="header-title">物件管理</div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>🏠</span>
+            租重點
+        </div>
+        <ul class="sidebar-menu">
+            <li><span class="menu-icon">🏠</span>租屋列表</li>
+            <li><span class="menu-icon">🏡</span>我的租屋</li>
+            <li><span class="menu-icon">☁️</span>上傳租屋</li>
+            <li><span class="menu-icon">📧</span>預約列表</li>
+            <li><span class="menu-icon">👥</span>會員列表</li>
+            <li><span class="menu-icon">👤</span>會員中心</li>
+            <li><span class="menu-icon">🏢</span>加入公司</li>
+            <li><span class="menu-icon">📞</span>聯絡客服</li>
+            <li><span class="menu-icon">🚪</span>登出</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="time-selector">
+            <div class="time-row">
+                <select class="time-select" id="yearSelect" onchange="updateData()">
+                    <option value="前一週">前一週</option>
+                    <option value="前兩週">前兩週</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                </select>
+                <select class="time-select" id="monthSelect" onchange="updateData()" disabled>
+                    <option value="-">-</option>
+                    <option value="一月">一月</option>
+                    <option value="二月">二月</option>
+                    <option value="三月">三月</option>
+                    <option value="四月">四月</option>
+                    <option value="五月">五月</option>
+                    <option value="六月">六月</option>
+                    <option value="七月">七月</option>
+                    <option value="八月">八月</option>
+                    <option value="九月">九月</option>
+                    <option value="十月">十月</option>
+                    <option value="十一月">十一月</option>
+                    <option value="十二月">十二月</option>
+                </select>
+            </div>
+            <div class="time-range" id="timeRange">2025/09/22 ~ 2025/09/28</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">150</div>
+                <div class="stat-label">總上傳數</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">45</div>
+                <div class="stat-label">2萬以下</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">80</div>
+                <div class="stat-label">2~4萬</div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-title">團隊上傳趨勢</div>
+            <canvas id="trendChart" style="max-height: 250px;"></canvas>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-title">價格區間分布</div>
+            <canvas id="priceChart" style="max-height: 250px;"></canvas>
+        </div>
+
+        <div class="table-section">
+            <div class="chart-title">物件數量統計</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>名字</th>
+                        <th>2萬以下</th>
+                        <th>2~4萬</th>
+                        <th>4萬以上</th>
+                    </tr>
+                </thead>
+                <tbody id="teamTable">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-section">
+            <div class="chart-title">總數統計</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>名字</th>
+                        <th>總數</th>
+                    </tr>
+                </thead>
+                <tbody id="totalTable">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const teamData = [
+            {name: "王小明", below20k: 5, range20to40k: 8, above40k: 3, total: 16},
+            {name: "李美麗", below20k: 6, range20to40k: 10, above40k: 4, total: 20},
+            {name: "張大偉", below20k: 4, range20to40k: 9, above40k: 2, total: 15},
+            {name: "陳小華", below20k: 7, range20to40k: 11, above40k: 5, total: 23},
+            {name: "林志明", below20k: 3, range20to40k: 6, above40k: 2, total: 11},
+            {name: "黃淑芬", below20k: 5, range20to40k: 9, above40k: 3, total: 17},
+            {name: "周建國", below20k: 4, range20to40k: 7, above40k: 2, total: 13},
+            {name: "吳佳玲", below20k: 6, range20to40k: 10, above40k: 4, total: 20},
+            {name: "鄭雅婷", below20k: 3, range20to40k: 5, above40k: 1, total: 9},
+            {name: "蔡文傑", below20k: 2, range20to40k: 5, above40k: 1, total: 8}
+        ];
+
+        function renderTables() {
+            const teamTable = document.getElementById('teamTable');
+            const totalTable = document.getElementById('totalTable');
+
+            teamTable.innerHTML = teamData.map(item => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.below20k}</td>
+                    <td>${item.range20to40k}</td>
+                    <td>${item.above40k}</td>
+                </tr>
+            `).join('');
+
+            totalTable.innerHTML = teamData.map(item => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.total}</td>
+                </tr>
+            `).join('');
+
+            // 總計行
+            const totalRow = {
+                below20k: teamData.reduce((sum, item) => sum + item.below20k, 0),
+                range20to40k: teamData.reduce((sum, item) => sum + item.range20to40k, 0),
+                above40k: teamData.reduce((sum, item) => sum + item.above40k, 0),
+                total: teamData.reduce((sum, item) => sum + item.total, 0)
+            };
+
+            teamTable.innerHTML += `
+                <tr class="total-row">
+                    <td>總計</td>
+                    <td>${totalRow.below20k}</td>
+                    <td>${totalRow.range20to40k}</td>
+                    <td>${totalRow.above40k}</td>
+                </tr>
+            `;
+
+            totalTable.innerHTML += `
+                <tr class="total-row">
+                    <td>總計</td>
+                    <td>${totalRow.total}</td>
+                </tr>
+            `;
+        }
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function updateData() {
+            const year = document.getElementById('yearSelect').value;
+            const month = document.getElementById('monthSelect');
+
+            if (year === '前一週' || year === '前兩週') {
+                month.disabled = true;
+                month.value = '-';
+                document.getElementById('timeRange').textContent = '2025/09/22 ~ 2025/09/28';
+            } else {
+                month.disabled = false;
+                document.getElementById('timeRange').textContent = `${year}/${month.value} 資料`;
+            }
+        }
+
+        // 折線圖 - 上傳趨勢
+        const trendCtx = document.getElementById('trendChart');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: teamData.map(item => item.name),
+                datasets: [{
+                    label: '上傳數量',
+                    data: teamData.map(item => item.total),
+                    borderColor: '#2196F3',
+                    backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // 長條圖 - 價格區間
+        const priceCtx = document.getElementById('priceChart');
+        new Chart(priceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2萬以下', '2~4萬', '4萬以上'],
+                datasets: [{
+                    label: '物件數量',
+                    data: [
+                        teamData.reduce((sum, item) => sum + item.below20k, 0),
+                        teamData.reduce((sum, item) => sum + item.range20to40k, 0),
+                        teamData.reduce((sum, item) => sum + item.above40k, 0)
+                    ],
+                    backgroundColor: [
+                        '#4CAF50',
+                        '#2196F3',
+                        '#FF9800'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        renderTables();
+    </script>
+</body>
+</html>

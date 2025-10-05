@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 會員登入</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: #1a1a2e;
+            transition: left 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            padding: 20px;
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 20px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        .menu-icon {
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 56px);
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .login-subtitle {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .login-body {
+            padding: 30px 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 18px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 12px 12px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2196F3;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .forgot-link {
+            font-size: 14px;
+            color: #2196F3;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+
+        .login-footer {
+            text-align: center;
+            padding: 20px 25px 30px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .register-btn {
+            padding: 10px 30px;
+            background: white;
+            color: #2196F3;
+            border: 2px solid #2196F3;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .register-btn:hover {
+            background: #2196F3;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 450px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 20px 25px;
+            font-size: 20px;
+            font-weight: 600;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 15px 25px;
+            border-top: 1px solid #f0f0f0;
+            text-align: right;
+        }
+
+        .btn-close {
+            padding: 10px 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            padding: 10px 20px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #4caf50;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <div class="header-title">會員登入</div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>🏠</span>
+            租重點
+        </div>
+        <ul class="sidebar-menu">
+            <li><span class="menu-icon">🏠</span>租屋列表</li>
+            <li><span class="menu-icon">🏡</span>我的租屋</li>
+            <li><span class="menu-icon">☁️</span>上傳租屋</li>
+            <li><span class="menu-icon">📧</span>預約列表</li>
+            <li><span class="menu-icon">👥</span>會員列表</li>
+            <li><span class="menu-icon">👤</span>會員中心</li>
+            <li><span class="menu-icon">🏢</span>加入公司</li>
+            <li><span class="menu-icon">📞</span>聯絡客服</li>
+            <li><span class="menu-icon">🚪</span>登出</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="login-container">
+        <div class="login-header">
+            <div class="login-title">🏠 租重點</div>
+            <div class="login-subtitle">會員登入系統</div>
+        </div>
+
+        <div class="login-body">
+            <div class="success-message" id="successMessage"></div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">帳號 / 電子郵件</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">👤</span>
+                        <input
+                            type="text"
+                            class="form-input"
+                            id="accountOrMail"
+                            placeholder="請輸入帳號或電子郵件"
+                            required
+                        >
+                    </div>
+                    <div class="error-message" id="accountError">請輸入正確的帳號或電子郵件格式</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">密碼</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+                        <input
+                            type="password"
+                            class="form-input"
+                            id="password"
+                            placeholder="請輸入密碼"
+                            required
+                        >
+                    </div>
+                    <div class="error-message" id="passwordError">密碼不能空白</div>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="remember">
+                        <span>記憶帳號密碼</span>
+                    </label>
+                    <a class="forgot-link" onclick="showModal('forgotModal')">忘記密碼</a>
+                </div>
+
+                <button type="submit" class="login-btn">登入</button>
+            </form>
+        </div>
+
+        <div class="login-footer">
+            <div class="footer-text">不是會員？</div>
+            <button class="register-btn" onclick="showModal('registerModal')">註冊</button>
+        </div>
+    </div>
+
+    <!-- 註冊 Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <div class="modal-header">會員註冊系統</div>
+            <div class="modal-body">
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label class="form-label">帳號 <span style="color: #f44336;">*</span></label>
+                        <input
+                            type="text"
+                            class="form-input"
+                            style="padding-left: 12px;"
+                            placeholder="請輸入帳號"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">姓名 <span style="color: #f44336;">*</span></label>
+                        <input
+                            type="text"
+                            class="form-input"
+                            style="padding-left: 12px;"
+                            placeholder="請輸入姓名"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">電子郵件 <span style="color: #f44336;">*</span></label>
+                        <input
+                            type="email"
+                            class="form-input"
+                            style="padding-left: 12px;"
+                            placeholder="example@email.com"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">手機號碼 <span style="color: #f44336;">*</span></label>
+                        <input
+                            type="tel"
+                            class="form-input"
+                            style="padding-left: 12px;"
+                            placeholder="09xxxxxxxx"
+                            maxlength="10"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">密碼 <span style="color: #f44336;">*</span></label>
+                        <input
+                            type="password"
+                            class="form-input"
+                            style="padding-left: 12px;"
+                            placeholder="請輸入密碼"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">確認密碼 <span style="color: #f44336;">*</span></label>
+                        <input
+                            type="password"
+                            class="form-input"
+                            style="padding-left: 12px;"
+                            placeholder="請再次輸入密碼"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" required>
+                            <span>我同意服務條款及隱私權政策</span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close" onclick="closeModal('registerModal')">返回</button>
+                <button class="btn-submit" onclick="submitRegister()">註冊</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 忘記密碼 Modal -->
+    <div class="modal" id="forgotModal">
+        <div class="modal-content">
+            <div class="modal-header">重置密碼</div>
+            <div class="modal-body">
+                <form id="forgotForm" onsubmit="handleForgot(event)">
+                    <div class="form-group">
+                        <label class="form-label">電子郵件 <span style="color: #f44336;">*</span></label>
+                        <input
+                            type="email"
+                            class="form-input"
+                            style="padding-left: 12px;"
+                            placeholder="請輸入註冊時的電子郵件"
+                            required
+                        >
+                        <div style="font-size: 13px; color: #999; margin-top: 8px;">
+                            我們將發送重置密碼連結至您的電子郵件
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close" onclick="closeModal('forgotModal')">返回</button>
+                <button class="btn-submit" onclick="submitForgot()">發送重置連結</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+
+            const account = document.getElementById('accountOrMail').value;
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+
+            // 簡單驗證
+            const accountPattern = /^[a-zA-Z0-9]+$/;
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!accountPattern.test(account) && !emailPattern.test(account)) {
+                document.getElementById('accountError').classList.add('show');
+                return;
+            } else {
+                document.getElementById('accountError').classList.remove('show');
+            }
+
+            if (password.length === 0) {
+                document.getElementById('passwordError').classList.add('show');
+                return;
+            } else {
+                document.getElementById('passwordError').classList.remove('show');
+            }
+
+            // 顯示成功訊息
+            const successMsg = document.getElementById('successMessage');
+            successMsg.textContent = `登入成功，歡迎回來 ${account}`;
+            successMsg.classList.add('show');
+
+            // 記憶帳號密碼
+            if (remember) {
+                localStorage.setItem('savedAccount', account);
+            }
+
+            // 3秒後模擬跳轉
+            setTimeout(() => {
+                alert('登入成功！');
+                // 實際應用中會跳轉到主頁
+                // window.location.href = 'HouseList.html';
+            }, 1500);
+        }
+
+        function submitRegister() {
+            alert('註冊成功！請至電子郵件收取驗證信。');
+            closeModal('registerModal');
+        }
+
+        function submitForgot() {
+            alert('重置密碼連結已發送至您的電子郵件！');
+            closeModal('forgotModal');
+        }
+
+        // 載入儲存的帳號
+        window.onload = function() {
+            const savedAccount = localStorage.getItem('savedAccount');
+            if (savedAccount) {
+                document.getElementById('accountOrMail').value = savedAccount;
+                document.getElementById('remember').checked = true;
+            }
+        };
+
+        // 點擊 Modal 外部關閉
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        };
+    </script>
+</body>
+</html>

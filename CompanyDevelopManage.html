@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 物件開發管理</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: #1a1a2e;
+            transition: left 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            padding: 20px;
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 20px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        .menu-icon {
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .container {
+            margin-top: 56px;
+            padding: 15px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .main-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 40px 20px;
+        }
+
+        .menu-card {
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+            transition: all 0.3s;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.6);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2196F3;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .chart-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .filter-input,
+        .filter-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .filter-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .dev-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .dev-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .dev-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2196F3;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-developing {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+
+        .status-success {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .status-fail {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .dev-info {
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .info-line {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <div class="header-title">物件開發管理</div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>🏠</span>
+            租重點
+        </div>
+        <ul class="sidebar-menu">
+            <li><span class="menu-icon">🏠</span>租屋列表</li>
+            <li><span class="menu-icon">🏡</span>我的租屋</li>
+            <li><span class="menu-icon">☁️</span>上傳租屋</li>
+            <li><span class="menu-icon">📧</span>預約列表</li>
+            <li><span class="menu-icon">👥</span>會員列表</li>
+            <li><span class="menu-icon">👤</span>會員中心</li>
+            <li><span class="menu-icon">🏢</span>加入公司</li>
+            <li><span class="menu-icon">📞</span>聯絡客服</li>
+            <li><span class="menu-icon">🚪</span>登出</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <!-- 主選單頁面 -->
+        <div id="mainPage" class="page-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">25</div>
+                    <div class="stat-label">開發中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">成功</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">失敗</div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-title">開發狀態分布</div>
+                <canvas id="statusChart" style="max-height: 250px;"></canvas>
+            </div>
+
+            <div class="main-menu">
+                <div class="menu-card" onclick="showPage('addPage')">
+                    ➕ 新增開發
+                </div>
+                <div class="menu-card" onclick="showPage('listPage')">
+                    📋 開發案件
+                </div>
+            </div>
+        </div>
+
+        <!-- 開發列表頁面 -->
+        <div id="listPage" class="page-content">
+            <div style="text-align: right; margin-bottom: 15px;">
+                <button class="btn btn-primary" onclick="showPage('mainPage')" style="padding: 8px 20px;">返回</button>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-row">
+                    <button class="filter-btn">搜尋</button>
+                    <select class="filter-select">
+                        <option>排序：時間近到遠</option>
+                        <option>排序：時間遠到近</option>
+                    </select>
+                </div>
+                <div class="filter-row">
+                    <input type="text" class="filter-input" placeholder="搜尋名稱">
+                    <select class="filter-select">
+                        <option>狀態不限</option>
+                        <option>開發中</option>
+                        <option>成功</option>
+                        <option>失敗</option>
+                    </select>
+                </div>
+                <div class="filter-row">
+                    <select class="filter-select">
+                        <option>縣市不限</option>
+                        <option>台北市</option>
+                        <option>新北市</option>
+                        <option>桃園市</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>區域不限</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="devList"></div>
+        </div>
+
+        <!-- 新增開發頁面 -->
+        <div id="addPage" class="page-content">
+            <div style="text-align: right; margin-bottom: 15px;">
+                <button class="btn btn-primary" onclick="showPage('mainPage')" style="padding: 8px 20px;">返回</button>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-title">物件開發</div>
+                <p style="text-align: center; color: #666; padding: 40px 20px;">
+                    此為新增開發物件表單頁面<br>
+                    包含：名稱、屋主、電話、地址、開發狀態等欄位
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const developData = [
+            {id: 1, name: "中和區忠孝街物件", hostName: "張先生", hostPhone: "0912-345-678", city: "新北市", area: "中和區", address: "新北市中和區忠孝街123號", source: "591", state: 0, createTime: "2025/09/28", updateTime: "2025/09/28", remark: "屋主有意出租"},
+            {id: 2, name: "板橋區文化路商圈", hostName: "李小姐", hostPhone: "0923-456-789", city: "新北市", area: "板橋區", address: "新北市板橋區文化路456號", source: "朋友介紹", state: 1, createTime: "2025/09/27", updateTime: "2025/09/29", remark: "已簽約"},
+            {id: 3, name: "永和區樂華夜市旁", hostName: "王先生", hostPhone: "0934-567-890", city: "新北市", area: "永和區", address: "新北市永和區中山路789號", source: "自行開發", state: 2, createTime: "2025/09/26", updateTime: "2025/09/28", remark: "屋主不出租"},
+            {id: 4, name: "新莊區頭前捷運站", hostName: "陳小姐", hostPhone: "0945-678-901", city: "新北市", area: "新莊區", address: "新北市新莊區中正路321號", source: "591", state: 0, createTime: "2025/09/25", updateTime: "2025/09/25", remark: ""},
+            {id: 5, name: "三重區捷運站附近", hostName: "林先生", hostPhone: "0956-789-012", city: "新北市", area: "三重區", address: "新北市三重區重新路654號", source: "實價登錄", state: 1, createTime: "2025/09/24", updateTime: "2025/09/26", remark: "已成交"},
+            {id: 6, name: "台北市大安區精華地段", hostName: "黃小姐", hostPhone: "0967-890-123", city: "台北市", area: "大安區", address: "台北市大安區和平東路987號", source: "屋主主動", state: 0, createTime: "2025/09/23", updateTime: "2025/09/23", remark: "等待回覆"},
+            {id: 7, name: "汐止區康寧街", hostName: "吳先生", hostPhone: "0978-901-234", city: "新北市", area: "汐止區", address: "新北市汐止區康寧街234號", source: "591", state: 1, createTime: "2025/09/22", updateTime: "2025/09/24", remark: ""},
+            {id: 8, name: "蘆洲區三民高中附近", hostName: "鄭小姐", hostPhone: "0989-012-345", city: "新北市", area: "蘆洲區", address: "新北市蘆洲區三民路567號", source: "朋友介紹", state: 2, createTime: "2025/09/21", updateTime: "2025/09/23", remark: "租金談不攏"},
+            {id: 9, name: "土城區金城路", hostName: "周先生", hostPhone: "0911-123-456", city: "新北市", area: "土城區", address: "新北市土城區金城路890號", source: "自行開發", state: 0, createTime: "2025/09/20", updateTime: "2025/09/20", remark: ""},
+            {id: 10, name: "淡水區捷運站商圈", hostName: "蔡小姐", hostPhone: "0922-234-567", city: "新北市", area: "淡水區", address: "新北市淡水區中正路345號", source: "591", state: 1, createTime: "2025/09/19", updateTime: "2025/09/21", remark: "已簽約"}
+        ];
+
+        const statusText = ['開發中', '成功', '失敗'];
+        const statusClass = ['status-developing', 'status-success', 'status-fail'];
+
+        function renderDevList() {
+            const container = document.getElementById('devList');
+            container.innerHTML = developData.map(item => `
+                <div class="dev-card">
+                    <div class="dev-header">
+                        <div class="dev-name">${item.name}</div>
+                        <div class="status-badge ${statusClass[item.state]}">${statusText[item.state]}</div>
+                    </div>
+                    <div class="dev-info">
+                        <div class="info-line">屋主：${item.hostName}</div>
+                        <div class="info-line">電話：${item.hostPhone}</div>
+                        <div class="info-line">地址：${item.address}</div>
+                        <div class="info-line">案源：${item.source}</div>
+                        <div class="info-line">創建時間：${item.createTime}</div>
+                        ${item.remark ? `<div class="info-line">備註：${item.remark}</div>` : ''}
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="editDev(${item.id})">編輯</button>
+                        <button class="btn btn-danger" onclick="deleteDev(${item.id})">刪除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+
+            if (pageId === 'listPage') {
+                renderDevList();
+            }
+        }
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function editDev(id) {
+            alert('編輯開發案件 ID: ' + id);
+        }
+
+        function deleteDev(id) {
+            if (confirm('確定要刪除此開發案件嗎？')) {
+                alert('已刪除開發案件 ID: ' + id);
+            }
+        }
+
+        // 圓餅圖
+        const ctx = document.getElementById('statusChart');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['開發中', '成功', '失敗'],
+                datasets: [{
+                    data: [25, 18, 7],
+                    backgroundColor: [
+                        '#FF9800',
+                        '#4CAF50',
+                        '#F44336'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
