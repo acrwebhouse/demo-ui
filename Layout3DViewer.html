@@ -108,30 +108,33 @@
             transition: all 0.3s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+            color: white;
         }
 
         .styleBtn:active {
             transform: scale(0.95);
         }
 
-        .styleBtn.active {
+        .styleBtn:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.5);
         }
 
-        #cozyBtn {
+        #styleBtn {
             background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-            color: white;
         }
 
-        #industrialBtn {
+        #sizeBtn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
         }
 
-        #hotelBtn {
-            background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
-            color: white;
+        #designBtn {
+            background: linear-gradient(135deg, #fc5c7d 0%, #6a82fb 100%);
+        }
+
+        #calculateBtn {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
         }
 
         .control-panel {
@@ -183,6 +186,12 @@
         使用滑鼠拖曳旋轉 | 滾輪縮放 | 右鍵平移
     </div>
 
+    <div id="styleButtons">
+        <button class="styleBtn" id="styleBtn" onclick="handleStyleClick()">風格</button>
+        <button class="styleBtn" id="sizeBtn" onclick="handleSizeClick()">坪數</button>
+        <button class="styleBtn" id="designBtn" onclick="handleDesignClick()">設計</button>
+        <button class="styleBtn" id="calculateBtn" onclick="handleCalculateClick()">試算</button>
+    </div>
 
     <div class="control-panel">
         <button class="control-btn" onclick="resetView()">⟲</button>
@@ -203,6 +212,22 @@
             camera.position.set(25, 20, 25);
             controls.target.set(0, 4, 0);
             controls.update();
+        }
+
+        function handleStyleClick() {
+            alert('風格設定功能\n可選擇：溫馨風格、工業風格、現代風格');
+        }
+
+        function handleSizeClick() {
+            alert('坪數資訊\n目前格局：約 15 坪\n包含客廳、餐廳、三房兩衛');
+        }
+
+        function handleDesignClick() {
+            alert('設計客製化功能\n可調整：家具配置、色彩搭配、空間規劃');
+        }
+
+        function handleCalculateClick() {
+            alert('租金試算功能\n根據地點、坪數、設備計算合理租金');
         }
 
         // 初始化場景、相機、渲染器

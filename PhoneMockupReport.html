@@ -116,6 +116,143 @@
             opacity: 0.9;
         }
 
+        .comparison-table {
+            max-width: 1400px;
+            margin: 0 auto;
+            overflow-x: auto;
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 30px 25px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .comparison-table th:first-child {
+            text-align: left;
+            padding-left: 40px;
+        }
+
+        .comparison-table th.highlight-col {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            font-size: 24px;
+            position: relative;
+        }
+
+        .comparison-table th.highlight-col::after {
+            content: '⭐';
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+        }
+
+        .comparison-table td {
+            padding: 24px 25px;
+            text-align: center;
+            border-bottom: 2px solid #e5e7eb;
+            background: white;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .comparison-table td:first-child {
+            text-align: left;
+            padding-left: 40px;
+            color: #1f2937;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .comparison-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .comparison-table tbody tr:hover td {
+            background: #f9fafb;
+        }
+
+        .comparison-table td.highlight-col {
+            background: #fff7ed;
+            font-weight: 900;
+            font-size: 24px;
+        }
+
+        .comparison-table tbody tr:hover td.highlight-col {
+            background: #ffedd5;
+        }
+
+        .check-mark {
+            color: #10b981;
+            font-size: 28px;
+            font-weight: 900;
+        }
+
+        .cross-mark {
+            color: #ef4444;
+            font-size: 28px;
+            font-weight: 900;
+        }
+
+        .comparison-summary {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .summary-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px 50px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .summary-number {
+            font-size: 48px;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .summary-card:first-child .summary-number {
+            color: #fda085;
+        }
+
+        .summary-label {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+
         @media print {
             body {
                 background: white;
@@ -439,6 +576,273 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第四部分：租重點特殊功能 -->
+        <div class="page-section">
+            <div class="section-header">
+                <h2>🚀 租重點特殊功能</h2>
+                <p>業界獨家 · 顛覆傳統租屋體驗</p>
+            </div>
+
+            <!-- 三方 AI 智能助理 - 三个手机展示 -->
+            <div style="margin-bottom: 80px;">
+                <h2 style="text-align: center; color: white; font-size: 32px; font-weight: 900; margin-bottom: 15px;">🎯 三方 AI 智能助理</h2>
+                <p style="text-align: center; color: rgba(255, 255, 255, 0.9); font-size: 18px; margin-bottom: 50px;">租客、業務、公司三端專屬 AI，各有獨立資料庫，精準服務每個角色</p>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; max-width: 1400px; margin: 0 auto;">
+                    <div class="mockup-card">
+                        <h3 class="mockup-title">👤 租客端 AI</h3>
+                        <p class="mockup-desc">智能找房推薦，快速配對理想物件</p>
+                        <div class="phone-frame">
+                            <div class="phone-screen">
+                                <div class="phone-content">
+                                    <iframe src="AIChatBot.html"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mockup-card">
+                        <h3 class="mockup-title">💼 業務端 AI</h3>
+                        <p class="mockup-desc">一鍵上傳物件，即時查看個人業績</p>
+                        <div class="phone-frame">
+                            <div class="phone-screen">
+                                <div class="phone-content">
+                                    <iframe src="AIChatBotBusiness.html"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mockup-card">
+                        <h3 class="mockup-title">🏢 公司端 AI</h3>
+                        <p class="mockup-desc">全方位營運管理，數據一目了然</p>
+                        <div class="phone-frame">
+                            <div class="phone-screen">
+                                <div class="phone-content">
+                                    <iframe src="AIChatBotCompany.html"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mockup-grid">
+
+                <div class="mockup-card">
+                    <h3 class="mockup-title">📊 AI 房仲培訓系統</h3>
+                    <p class="mockup-desc">智能分析每位房仲特長，精準配對最適合的物件類型，提升成交率 300%</p>
+                    <div class="phone-frame">
+                        <div class="phone-screen">
+                            <div class="phone-content">
+                                <iframe src="RealtorRecommendationDashboard.html"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mockup-card">
+                    <h3 class="mockup-title">✨ AI 定制夢想家</h3>
+                    <p class="mockup-desc">說出理想風格，AI 即時生成 3D 模型！自動配對房源、設計公司、二房東改造方案</p>
+                    <div class="phone-frame">
+                        <div class="phone-screen">
+                            <div class="phone-content">
+                                <iframe src="AICustom3DHome.html"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mockup-card">
+                    <h3 class="mockup-title">🔒 企業資產防護系統</h3>
+                    <p class="mockup-desc">自動浮水印保護物件照片，防止員工離職盜圖！完整企業管理功能，價格親民</p>
+                    <div class="phone-frame">
+                        <div class="phone-screen">
+                            <div class="phone-content">
+                                <iframe src="CompanyAssetProtection.html"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 特殊功能亮點說明 -->
+            <div class="feature-highlights" style="max-width: 1200px; margin: 60px auto 0;">
+                <div class="highlight-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+                    <div class="highlight-item" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🤖</div>
+                        <h4 style="color: white; font-size: 20px; font-weight: 700; margin-bottom: 10px;">三方 AI 生態系統</h4>
+                        <p style="color: rgba(255, 255, 255, 0.9); font-size: 14px; line-height: 1.6;">
+                            租客找房、業務管理、公司營運<br>
+                            三個獨立 AI 各司其職<br>
+                            <strong>業務一鍵上傳物件</strong><br>
+                            <strong>公司即時查看所有數據</strong>
+                        </p>
+                    </div>
+
+                    <div class="highlight-item" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🎓</div>
+                        <h4 style="color: white; font-size: 20px; font-weight: 700; margin-bottom: 10px;">AI 房仲教育訓練</h4>
+                        <p style="color: rgba(255, 255, 255, 0.9); font-size: 14px; line-height: 1.6;">
+                            專業 AI 分析房仲特長<br>
+                            精準媒合適合的物件類型<br>
+                            <strong>新人快速上手</strong><br>
+                            <strong>老鳥業績翻倍</strong>
+                        </p>
+                    </div>
+
+                    <div class="highlight-item" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🏠</div>
+                        <h4 style="color: white; font-size: 20px; font-weight: 700; margin-bottom: 10px;">AI 定制 3D 模型</h4>
+                        <p style="color: rgba(255, 255, 255, 0.9); font-size: 14px; line-height: 1.6;">
+                            說出夢想風格立即生成 3D<br>
+                            自動配對房源+設計公司<br>
+                            <strong>連結二房東改造</strong><br>
+                            <strong>一站式完美解決</strong>
+                        </p>
+                    </div>
+
+                    <div class="highlight-item" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🔒</div>
+                        <h4 style="color: white; font-size: 20px; font-weight: 700; margin-bottom: 10px;">企業資安防護</h4>
+                        <p style="color: rgba(255, 255, 255, 0.9); font-size: 14px; line-height: 1.6;">
+                            所有物件自動加浮水印<br>
+                            員工離職無法盜取資產<br>
+                            <strong>保護公司心血</strong><br>
+                            <strong>中小企業最愛</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第五部分：平台比較表 -->
+        <div class="page-section">
+            <div class="section-header">
+                <h2>平台比較表</h2>
+                <p>租重點 vs 主要競爭對手功能比較</p>
+            </div>
+
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>功能項目</th>
+                            <th class="highlight-col">租重點</th>
+                            <th>591</th>
+                            <th>永慶房屋</th>
+                            <th>信義房屋</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>房源列表</td>
+                            <td class="highlight-col"><span class="check-mark">✓</span></td>
+                            <td><span class="check-mark">✓</span></td>
+                            <td><span class="check-mark">✓</span></td>
+                            <td><span class="check-mark">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>房源詳細資訊</td>
+                            <td class="highlight-col"><span class="check-mark">✓</span></td>
+                            <td><span class="check-mark">✓</span></td>
+                            <td><span class="check-mark">✓</span></td>
+                            <td><span class="check-mark">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>AI 智能推薦系統 - 流浪房仲推薦系統</td>
+                            <td class="highlight-col"><span class="check-mark">✓</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                        </tr>
+                        <tr>
+                            <td>AI 聊天機器人 - 三方</td>
+                            <td class="highlight-col"><span class="check-mark">✓</span></td>
+                            <td><span class="check-mark">✓</span> <span style="font-size: 14px; color: #6b7280;">(僅限租客)</span></td>
+                            <td><span class="check-mark">✓</span> <span style="font-size: 14px; color: #6b7280;">(僅限租客)</span></td>
+                            <td><span class="check-mark">✓</span> <span style="font-size: 14px; color: #6b7280;">(僅限租客)</span></td>
+                        </tr>
+                        <tr>
+                            <td>3D 格局瀏覽</td>
+                            <td class="highlight-col"><span class="check-mark">✓</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                        </tr>
+                        <tr>
+                            <td>AI 定制夢想家</td>
+                            <td class="highlight-col"><span class="check-mark">✓</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                        </tr>
+                        <tr>
+                            <td>媒合配對系統</td>
+                            <td class="highlight-col"><span class="check-mark">✓</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                        </tr>
+                        <tr>
+                            <td>電子簽約系統 + 金流支付系統</td>
+                            <td class="highlight-col"><span class="check-mark">✓</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                        </tr>
+                        <tr>
+                            <td>包租代管服務</td>
+                            <td class="highlight-col"><span class="check-mark">✓</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                        </tr>
+                        <tr>
+                            <td>企業管理模組</td>
+                            <td class="highlight-col"><span class="check-mark">✓</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                            <td><span class="check-mark">✓</span> <span style="font-size: 14px; color: #6b7280;">(僅限自己公司)</span></td>
+                            <td><span class="check-mark">✓</span> <span style="font-size: 14px; color: #6b7280;">(僅限自己公司)</span></td>
+                        </tr>
+                        <tr>
+                            <td>企業級資料安全保護</td>
+                            <td class="highlight-col"><span class="check-mark">✓</span></td>
+                            <td><span class="cross-mark">✗</span></td>
+                            <td><span class="check-mark">✓</span> <span style="font-size: 14px; color: #6b7280;">(僅限自己公司)</span></td>
+                            <td><span class="check-mark">✓</span> <span style="font-size: 14px; color: #6b7280;">(僅限自己公司)</span></td>
+                        </tr>
+                        <tr>
+                            <td>預約看房系統</td>
+                            <td class="highlight-col"><span class="check-mark">✓</span></td>
+                            <td><span class="check-mark">✓</span></td>
+                            <td><span class="check-mark">✓</span></td>
+                            <td><span class="check-mark">✓</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="comparison-summary">
+                <div class="summary-card">
+                    <div class="summary-number">13/13</div>
+                    <div class="summary-label">租重點功能覆蓋率</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">4/13</div>
+                    <div class="summary-label">591 功能覆蓋率</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">6/13</div>
+                    <div class="summary-label">永慶房屋功能覆蓋率</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">6/13</div>
+                    <div class="summary-label">信義房屋功能覆蓋率</div>
                 </div>
             </div>
         </div>

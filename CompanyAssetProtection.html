@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - 企業資產防護系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: #333;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-content {
+            flex: 1;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .content-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 15px;
+            max-width: 480px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .info-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #11998e;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f0fdf4;
+            border-radius: 10px;
+            border-left: 4px solid #10b981;
+        }
+
+        .feature-icon {
+            font-size: 24px;
+        }
+
+        .feature-text {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .image-card {
+            background: white;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .image-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ef4444;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .watermark-container {
+            position: relative;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .watermark-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .watermark-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .watermark-text {
+            position: absolute;
+            font-size: 32px;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.4);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            transform: rotate(-30deg);
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .watermark-1 {
+            top: 15%;
+            left: 10%;
+        }
+
+        .watermark-2 {
+            top: 45%;
+            left: 15%;
+        }
+
+        .watermark-3 {
+            top: 75%;
+            left: 10%;
+        }
+
+        .watermark-4 {
+            top: 30%;
+            right: 10%;
+        }
+
+        .watermark-5 {
+            top: 60%;
+            right: 15%;
+        }
+
+        .watermark-logo {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(17, 153, 142, 0.85);
+            backdrop-filter: blur(5px);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .security-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .security-badge-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .security-badge-text {
+            font-size: 13px;
+            opacity: 0.95;
+        }
+
+        .warning-box {
+            background: #fef2f2;
+            border: 2px solid #ef4444;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .warning-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #ef4444;
+            margin-bottom: 10px;
+        }
+
+        .warning-text {
+            font-size: 13px;
+            color: #991b1b;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <div class="header-content">
+            <div class="header-title">🔒 企業資產防護系統</div>
+            <div class="header-subtitle">自動浮水印 · 杜絕盜圖</div>
+        </div>
+    </div>
+
+    <div class="content-container">
+        <div class="security-badge">
+            <div class="security-badge-title">✅ 企業級資料安全保護</div>
+            <div class="security-badge-text">所有物件照片自動加上公司專屬浮水印</div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-title">
+                🏢 中小企業必備功能
+            </div>
+            <div class="info-text">
+                許多中小型房仲公司買不起昂貴的管理系統，更擔心業務離職時盜走公司辛苦累積的物件照片。租重點提供平價且強大的企業管理系統，內建自動浮水印功能！
+            </div>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">🔐</div>
+                    <div class="feature-text"><strong>自動浮水印：</strong>上傳即刻標記公司名稱</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🛡️</div>
+                    <div class="feature-text"><strong>防盜保護：</strong>員工離職無法帶走照片</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-text"><strong>價格親民：</strong>中小企業也能輕鬆負擔</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-text"><strong>完整管理：</strong>物件、業績、員工一站搞定</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <div class="warning-title">
+                ⚠️ 傳統痛點
+            </div>
+            <div class="warning-text">
+                業務離職帶走客戶名單和物件照片，公司損失慘重！<br>
+                有了租重點，所有資料都有公司標記，再也不怕了！
+            </div>
+        </div>
+
+        <div class="image-card">
+            <div class="image-title">📸 浮水印展示範例</div>
+            <div class="watermark-container">
+                <img src="resource/secure_img.jpeg"
+                     alt="房源照片"
+                     class="watermark-image">
+                <div class="watermark-overlay">
+                    <div class="watermark-text watermark-1">租重點</div>
+                    <div class="watermark-text watermark-2">XX房仲公司</div>
+                    <div class="watermark-text watermark-3">租重點</div>
+                    <div class="watermark-text watermark-4">XX房仲公司</div>
+                    <div class="watermark-text watermark-5">租重點</div>
+                    <div class="watermark-logo">🏢 XX房仲公司專屬</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-title">
+                💡 浮水印特色
+            </div>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">✨</div>
+                    <div class="feature-text">自動添加，無需手動處理</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🎨</div>
+                    <div class="feature-text">半透明設計，不影響觀看體驗</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔄</div>
+                    <div class="feature-text">多層次分布，難以去除</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-text">公司 Logo + 名稱雙重保護</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-card" style="background: linear-gradient(135deg, #f6f8fb 0%, #e9f0f7 100%); border: 2px solid #11998e;">
+            <div class="info-title">
+                🎯 為什麼選擇租重點？
+            </div>
+            <div class="info-text">
+                <strong style="color: #11998e;">✓ 完整的企業管理系統</strong><br>
+                物件管理、業績報表、員工管理一應俱全<br><br>
+                <strong style="color: #11998e;">✓ 自動浮水印保護</strong><br>
+                上傳照片即刻標記，杜絕離職員工盜圖<br><br>
+                <strong style="color: #11998e;">✓ 中小企業友善價格</strong><br>
+                不用花大錢也能享有企業級功能<br><br>
+                <strong style="color: #11998e;">✓ 雲端隨時存取</strong><br>
+                任何裝置、任何地點都能管理公司業務
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

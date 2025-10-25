@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>租重點 - AI 業務助理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        .header-content {
+            flex: 1;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 480px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .message {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            display: flex;
+            flex-direction: column;
+            max-width: 85%;
+        }
+
+        .message.user .message-content {
+            align-items: flex-end;
+        }
+
+        .message.bot .message-content {
+            align-items: flex-start;
+        }
+
+        .message-bubble {
+            padding: 14px 18px;
+            border-radius: 18px;
+            font-size: 15px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .message.bot .message-bubble {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .message.bot .message-time {
+            text-align: left;
+            color: #999;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(253, 160, 133, 0.3);
+            margin-top: 8px;
+        }
+
+        .stats-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .property-upload-card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-top: 8px;
+        }
+
+        .upload-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 12px;
+        }
+
+        .upload-example {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .upload-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-btn:active {
+            transform: scale(0.98);
+        }
+
+        .input-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .message-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <div class="header-content">
+            <div class="header-title">🎯 AI 業務助理</div>
+            <div class="header-subtitle">專屬您的智能業務夥伴</div>
+        </div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <!-- 歡迎訊息 -->
+        <div class="message bot">
+            <div class="message-content">
+                <div class="message-bubble">
+                    您好！我是您的專屬 AI 業務助理 👔<br><br>
+                    我可以幫您：<br>
+                    📊 查看個人業績數據<br>
+                    🏠 快速上傳新物件<br>
+                    📈 分析市場趨勢<br>
+                    💼 管理客戶跟進<br><br>
+                    請問需要什麼協助？
+                </div>
+                <div class="message-time">10:30</div>
+            </div>
+        </div>
+
+        <!-- 使用者訊息 1 -->
+        <div class="message user">
+            <div class="message-content">
+                <div class="message-bubble">
+                    幫我看一下本月業績
+                </div>
+                <div class="message-time">10:31</div>
+            </div>
+        </div>
+
+        <!-- AI 回應 - 業績卡片 -->
+        <div class="message bot">
+            <div class="message-content">
+                <div class="message-bubble">
+                    好的！為您整理本月業績統計 📊
+                </div>
+                <div class="stats-card">
+                    <div class="stats-title">
+                        💰 本月業績總覽
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">成交件數</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">NT$ 96K</div>
+                            <div class="stat-label">總佣金</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">24</div>
+                            <div class="stat-label">帶看次數</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">33%</div>
+                            <div class="stat-label">成交率</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="message-time">10:31</div>
+            </div>
+        </div>
+
+        <!-- 使用者訊息 2 -->
+        <div class="message user">
+            <div class="message-content">
+                <div class="message-bubble">
+                    我想上傳一個新物件
+                </div>
+                <div class="message-time">10:32</div>
+            </div>
+        </div>
+
+        <!-- AI 回應 - 上傳指南 -->
+        <div class="message bot">
+            <div class="message-content">
+                <div class="message-bubble">
+                    太好了！只要貼上物件資訊，我就能快速幫您上傳到系統 🚀
+                </div>
+                <div class="property-upload-card">
+                    <div class="upload-title">📝 物件格式範例</div>
+                    <div class="upload-example">
+                        地址：台北市大安區復興南路一段<br>
+                        租金：NT$ 18,000/月<br>
+                        坪數：12坪<br>
+                        格局：1房1廳1衛<br>
+                        設備：冷氣、洗衣機、冰箱<br>
+                        特色：近捷運、採光佳
+                    </div>
+                    <button class="upload-btn" onclick="uploadProperty()">📤 開始上傳物件</button>
+                </div>
+                <div class="message-time">10:32</div>
+            </div>
+        </div>
+
+        <!-- 使用者訊息 3 -->
+        <div class="message user">
+            <div class="message-content">
+                <div class="message-bubble">
+                    地址：台北市信義區松仁路<br>
+                    租金：NT$ 25,000/月<br>
+                    坪數：15坪<br>
+                    格局：2房1廳1衛<br>
+                    設備：全配<br>
+                    特色：近101、景觀好
+                </div>
+                <div class="message-time">10:33</div>
+            </div>
+        </div>
+
+        <!-- AI 回應 -->
+        <div class="message bot">
+            <div class="message-content">
+                <div class="message-bubble">
+                    ✅ 物件資料已成功上傳！<br><br>
+                    已自動分析：<br>
+                    • 市場定價合理 💹<br>
+                    • 預估出租率：85%<br>
+                    • 建議強調101景觀優勢<br><br>
+                    系統已為您的物件配對 12 位潛在客戶！
+                </div>
+                <div class="message-time">10:33</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-container">
+        <input type="text" class="message-input" placeholder="輸入訊息..." id="messageInput">
+        <button class="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        function uploadProperty() {
+            alert('開啟物件上傳介面');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            if (input.value.trim()) {
+                alert('訊息：' + input.value);
+                input.value = '';
+            }
+        }
+
+        // 按 Enter 發送訊息
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
